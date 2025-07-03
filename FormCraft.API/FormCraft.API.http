@@ -1,0 +1,6 @@
+@FormCraft.API_HostAddress = http://localhost:5140
+
+GET {{FormCraft.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

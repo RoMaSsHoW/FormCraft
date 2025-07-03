@@ -1,0 +1,31 @@
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  postgres_db_data:
+
+services:
+  formcraft.api:
+    image: ${DOCKER_REGISTRY-}formcraftapi
+    container_name: api_container
+    build:
+      context: .
+      dockerfile: FormCraft.API/Dockerfile
+    networks:
+        - app_network
+
+  postgres_db:
+    image: postgres:latest
+    container_name: db_container
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: FormCraft
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_db_data:/var/lib/postgresql/data
+    networks:
+      - app_network
