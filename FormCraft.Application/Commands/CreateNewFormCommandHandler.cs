@@ -16,8 +16,6 @@ namespace FormCraft.Application.Commands
         private readonly IUserRoleChecker _userRoleChecker;
         private readonly IUnitOfWork _unitOfWork;
 
-        private readonly Guid _testAuthor = Guid.NewGuid();
-
         public CreateNewFormCommandHandler(
             IFormRepository formRepository,
             IQuestionRepository questionRepository,
@@ -76,14 +74,16 @@ namespace FormCraft.Application.Commands
 
         private async Task<Form> CreateFormAsync(CreateNewFormCommand request, List<Tag> tags)
         {
+            var _testAuthor = Guid.NewGuid();
+
             var form = Form.Create(
-                _testAuthor,
-                request.Title,
-                request.Description,
-                request.ImageUrl,
-                request.Topic,
-                tags,
-                request.IsPublic);
+                    _testAuthor,
+                    request.Title,
+                    request.Description,
+                    //request.ImageUrl,
+                    request.Topic,
+                    tags,
+                    request.IsPublic);
 
             await _formRepository.AddAsync(form);
             await _unitOfWork.CommitAsync();
@@ -93,15 +93,20 @@ namespace FormCraft.Application.Commands
 
         private async Task AddQuestionsAsync(Form form, IEnumerable<QuestionRequest> questions)
         {
+            var newQuestions = new List<Question>();
+
             foreach (var question in questions)
             {
-                var newQuestion = form.AddQuestion(
+                newQuestions = (List<Question>)form.AddQuestion(
                     question.Text,
                     question.Type,
                     form.AuthorId,
                     _userRoleChecker);
 
-                await _questionRepository.AddAsync(newQuestion);
+            }
+            if (newQuestions.Count > 0)
+            {
+                await _questionRepository.CreateAsync(newQuestions);
                 await _unitOfWork.CommitAsync();
             }
         }

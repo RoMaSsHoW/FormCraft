@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FormCraft.Infrastructure.Persistance.Migrations
 {
     [DbContext(typeof(FormCraftDbContext))]
-    [Migration("20250703122735_initial")]
+    [Migration("20250704124716_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -83,11 +83,6 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("description");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("image_url");
 
                     b.Property<bool>("IsPublic")
                         .ValueGeneratedOnAdd()
@@ -284,6 +279,12 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                     b.HasOne("FormCraft.Domain.Aggregates.FormAggregate.Form", null)
                         .WithMany("Tags")
                         .HasForeignKey("FormId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FormCraft.Domain.Aggregates.FormAggregate.ValueObjects.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

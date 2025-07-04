@@ -7,7 +7,7 @@ namespace FormCraft.Application.Commands
         //Guid AuthorId,
         string Title,
         string Description,
-        string ImageUrl,
+        //string ImageUrl,
         string Topic,
         IEnumerable<string> Tags,
         IEnumerable<QuestionRequest> Questions,

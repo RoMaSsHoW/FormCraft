@@ -21,9 +21,14 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
             return question;
         }
 
-        public async Task AddAsync(Question question)
+        public async Task CreateAsync(Question question)
         {
             await _dbContext.Questions.AddAsync(question);
+        }
+
+        public async Task CreateAsync(IEnumerable<Question> questions)
+        {
+            await _dbContext.Questions.AddRangeAsync(questions);
         }
 
         public async Task RemoveAsync(IEnumerable<Guid> ids)

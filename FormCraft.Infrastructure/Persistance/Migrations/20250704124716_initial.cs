@@ -20,7 +20,6 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                     author_id = table.Column<Guid>(type: "uuid", nullable: false),
                     title = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     description = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    image_url = table.Column<string>(type: "text", nullable: false),
                     topic_name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     is_public = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
                     last_modified = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -96,6 +95,12 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                         column: x => x.form_id,
                         principalTable: "form",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_form_tag_tag_id",
+                        column: x => x.id,
+                        principalTable: "tag",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_form_tag_tag_tag_id",

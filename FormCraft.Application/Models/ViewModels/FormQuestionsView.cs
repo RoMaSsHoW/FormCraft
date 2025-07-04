@@ -1,17 +1,16 @@
-﻿using FormCraft.Domain.Aggregates.FormAggregate;
-
-namespace FormCraft.Application.Models.ViewModels
+﻿namespace FormCraft.Application.Models.ViewModels
 {
     public class FormQuestionsView
     {
-        public Guid Id { get; }
-        public Guid AuthorId { get; }
-        public string Title { get; }
-        public string Description { get; }
-        public string ImageUrl { get; }
-        public string TopicName { get; }
-        public bool IsPublic { get; }
-        public DateTime LastModified { get; }
-        public DateTime CreationTime { get; }
+        public Guid Id { get; set; }
+        public Guid AuthorId { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string TopicName { get; set; }
+        public bool IsPublic { get; set; }
+        public DateTime CreationTime { get; set; }
+        public DateTime LastModified { get; set; }
+        public List<string> Tags { get; set; }
+        public List<QuestionView> Questions { get; set; }
     }
 }

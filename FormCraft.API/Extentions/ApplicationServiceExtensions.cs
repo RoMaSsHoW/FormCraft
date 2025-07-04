@@ -1,10 +1,13 @@
 ﻿using FormCraft.Application.Commands;
 using FormCraft.Application.Common.Persistance;
+using FormCraft.Application.Queries;
 using FormCraft.Application.Services;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Infrastructure;
 using FormCraft.Infrastructure.Persistance.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
+using System.Data;
 
 namespace FormCraft.API.Extentions
 {
@@ -14,7 +17,7 @@ namespace FormCraft.API.Extentions
         {
             ConfigureServices(services);
 
-            ConfigureSettigsForDapper(services);
+            ConfigureSettigsForDapper(services, configuration);
 
             ConfigureDbContext(services, configuration);
 
@@ -45,9 +48,12 @@ namespace FormCraft.API.Extentions
             });
         }
 
-        private static void ConfigureSettigsForDapper(IServiceCollection services)
+        private static void ConfigureSettigsForDapper(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<ISqlConnectionFacroty, SqlConnectionFacroty>();
+            services.AddScoped<IDbConnection>(provider =>
+            {
+                return new NpgsqlConnection(configuration.GetConnectionString("PostgresqlDbConnection"));
+            });
         }
 
         private static void ConfigureMediatR(IServiceCollection services)
@@ -55,9 +61,8 @@ namespace FormCraft.API.Extentions
             services.AddMediatR(mc =>
             {
                 mc.RegisterServicesFromAssemblies(
-                    typeof(CreateNewFormCommand).Assembly);
-
-                //mc.AddBehavior(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkBehavior<,>));
+                    typeof(CreateNewFormCommand).Assembly,
+                    typeof(GetAllFormsQuery).Assembly);
             });
         }
     }

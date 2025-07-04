@@ -15,7 +15,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             Guid authorId,
             string title,
             string description,
-            string imageUrl,
+            //string imageUrl,
             string topic,
             IEnumerable<Tag> tags,
             bool isPublic)
@@ -40,7 +40,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             AuthorId = authorId;
             Title = title;
             Description = description;
-            ImageUrl = imageUrl;
+            //ImageUrl = imageUrl;
             TopicName = topic;
             IsPublic = isPublic;
             CreationTime = DateTime.UtcNow;
@@ -55,7 +55,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
         public Guid AuthorId { get; private set; }
         public string Title { get; private set; }
         public string Description { get; private set; }
-        public string ImageUrl { get; private set; }
+        //public string ImageUrl { get; private set; }
         public string TopicName { get; private set; }
         public IReadOnlyCollection<FormTag> Tags => _tags.AsReadOnly();
         public IReadOnlyCollection<Question> Questions => _questions.AsReadOnly();
@@ -70,7 +70,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             Guid authorId,
             string title,
             string description,
-            string imageUrl,
+            //string imageUrl,
             string topic,
             IEnumerable<Tag> tags,
             bool isPublic)
@@ -79,7 +79,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
                 authorId,
                 title,
                 description,
-                imageUrl,
+                //imageUrl,
                 topic,
                 tags,
                 isPublic);
@@ -163,7 +163,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             IsPublic = isPublic;
         }
 
-        public Question AddQuestion(string questionText, string questionType, Guid userId, IUserRoleChecker userRoleChecker)
+        public IEnumerable<Question> AddQuestion(string questionText, string questionType, Guid userId, IUserRoleChecker userRoleChecker)
         {
             if (!userRoleChecker.IsAdmin(userId) || userId != AuthorId)
                 throw new ArgumentException("User not author or admin");
@@ -173,7 +173,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             var question = Question.Create(Id, AuthorId, questionText, questionType, lastOrderNumber + 1);
             _questions.Add(question);
 
-            return question;
+            return _questions;
         }
 
         public void ChangeQuestionOrder(List<Guid> questionIds, Guid userId, IUserRoleChecker userRoleChecker)
