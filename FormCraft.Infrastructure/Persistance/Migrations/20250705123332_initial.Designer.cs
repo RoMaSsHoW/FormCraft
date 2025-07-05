@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FormCraft.Infrastructure.Persistance.Migrations
 {
     [DbContext(typeof(FormCraftDbContext))]
-    [Migration("20250704124716_initial")]
+    [Migration("20250705123332_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -108,6 +108,10 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Title");
+
+                    b.HasIndex("TopicName");
+
                     b.ToTable("form", (string)null);
                 });
 
@@ -152,7 +156,7 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("id");
+                        .HasColumnName("Id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
@@ -178,7 +182,7 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("id");
+                        .HasColumnName("Id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
@@ -190,6 +194,8 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name");
+
                     b.ToTable("tag", (string)null);
                 });
 
@@ -198,7 +204,7 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("id");
+                        .HasColumnName("Id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
 
@@ -211,6 +217,33 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("topic", (string)null);
+                });
+
+            modelBuilder.Entity("FormCraft.Domain.Aggregates.UserAggregate.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("refresh_token");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("role");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("user", (string)null);
                 });
 
             modelBuilder.Entity("FormCraft.Domain.Aggregates.FormAggregate.Answers.BooleanAnswer", b =>
@@ -292,6 +325,55 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                         .WithMany()
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FormCraft.Domain.Aggregates.UserAggregate.User", b =>
+                {
+                    b.OwnsOne("FormCraft.Domain.Aggregates.UserAggregate.ValueObjects.Email", "Email", b1 =>
+                        {
+                            b1.Property<Guid>("UserId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("EmailAddress")
+                                .IsRequired()
+                                .HasMaxLength(255)
+                                .HasColumnType("character varying(255)")
+                                .HasColumnName("email");
+
+                            b1.HasKey("UserId");
+
+                            b1.HasIndex("EmailAddress")
+                                .IsUnique();
+
+                            b1.ToTable("user");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserId");
+                        });
+
+                    b.OwnsOne("FormCraft.Domain.Aggregates.UserAggregate.ValueObjects.Password", "Password", b1 =>
+                        {
+                            b1.Property<Guid>("UserId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("PasswordHash")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("password_hash");
+
+                            b1.HasKey("UserId");
+
+                            b1.ToTable("user");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserId");
+                        });
+
+                    b.Navigation("Email")
+                        .IsRequired();
+
+                    b.Navigation("Password")
                         .IsRequired();
                 });
 

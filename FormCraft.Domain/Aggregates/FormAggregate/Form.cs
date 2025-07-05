@@ -15,7 +15,6 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             Guid authorId,
             string title,
             string description,
-            //string imageUrl,
             string topic,
             IEnumerable<Tag> tags,
             bool isPublic)
@@ -40,11 +39,9 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             AuthorId = authorId;
             Title = title;
             Description = description;
-            //ImageUrl = imageUrl;
             TopicName = topic;
             IsPublic = isPublic;
             CreationTime = DateTime.UtcNow;
-            //Version = new byte[] { 1 };
 
             if (tags.Count() > 0)
                 foreach (var tag in tags)
@@ -55,7 +52,6 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
         public Guid AuthorId { get; private set; }
         public string Title { get; private set; }
         public string Description { get; private set; }
-        //public string ImageUrl { get; private set; }
         public string TopicName { get; private set; }
         public IReadOnlyCollection<FormTag> Tags => _tags.AsReadOnly();
         public IReadOnlyCollection<Question> Questions => _questions.AsReadOnly();
@@ -70,7 +66,6 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             Guid authorId,
             string title,
             string description,
-            //string imageUrl,
             string topic,
             IEnumerable<Tag> tags,
             bool isPublic)
@@ -79,7 +74,6 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
                 authorId,
                 title,
                 description,
-                //imageUrl,
                 topic,
                 tags,
                 isPublic);
@@ -168,9 +162,15 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             if (!userRoleChecker.IsAdmin(userId) || userId != AuthorId)
                 throw new ArgumentException("User not author or admin");
 
+            if (_questions.Any(q => q.Text == questionText && q.Type == QuestionType.FromName<QuestionType>(questionType)))
+            {
+                return _questions;
+            }
+
             var lastOrderNumber = _questions.Any() ? _questions.Max(q => q.OrderNumber) : 0;
 
             var question = Question.Create(Id, AuthorId, questionText, questionType, lastOrderNumber + 1);
+
             _questions.Add(question);
 
             return _questions;

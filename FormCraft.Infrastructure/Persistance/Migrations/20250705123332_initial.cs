@@ -34,26 +34,42 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                 name: "tag",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_tag", x => x.id);
+                    table.PrimaryKey("PK_tag", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "topic",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_topic", x => x.id);
+                    table.PrimaryKey("PK_topic", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "user",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    password_hash = table.Column<string>(type: "text", nullable: false),
+                    role = table.Column<string>(type: "text", nullable: false),
+                    refresh_token = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_user", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -82,14 +98,14 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                 name: "form_tag",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     form_id = table.Column<Guid>(type: "uuid", nullable: false),
                     tag_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_form_tag", x => x.id);
+                    table.PrimaryKey("PK_form_tag", x => x.Id);
                     table.ForeignKey(
                         name: "FK_form_tag_form_form_id",
                         column: x => x.form_id,
@@ -97,16 +113,16 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_form_tag_tag_id",
-                        column: x => x.id,
+                        name: "FK_form_tag_tag_Id",
+                        column: x => x.Id,
                         principalTable: "tag",
-                        principalColumn: "id",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_form_tag_tag_tag_id",
                         column: x => x.tag_id,
                         principalTable: "tag",
-                        principalColumn: "id",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -142,6 +158,16 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                 column: "question_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_form_title",
+                table: "form",
+                column: "title");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_form_topic_name",
+                table: "form",
+                column: "topic_name");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_form_tag_form_id",
                 table: "form_tag",
                 column: "form_id");
@@ -155,6 +181,17 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                 name: "IX_question_form_id",
                 table: "question",
                 column: "form_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tag_name",
+                table: "tag",
+                column: "name");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_user_email",
+                table: "user",
+                column: "email",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -168,6 +205,9 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
 
             migrationBuilder.DropTable(
                 name: "topic");
+
+            migrationBuilder.DropTable(
+                name: "user");
 
             migrationBuilder.DropTable(
                 name: "question");

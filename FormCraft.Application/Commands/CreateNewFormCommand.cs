@@ -1,16 +1,14 @@
 ﻿using FormCraft.Application.Common.Messaging;
-using FormCraft.Application.Models.RequestModels;
+using FormCraft.Application.Models.DTO;
 
 namespace FormCraft.Application.Commands
 {
     public record CreateNewFormCommand(
-        //Guid AuthorId,
         string Title,
         string Description,
-        //string ImageUrl,
         string Topic,
         IEnumerable<string> Tags,
-        IEnumerable<QuestionRequest> Questions,
+        IEnumerable<QuestionDTO> Questions,
         bool IsPublic) : ICommand;
 }
 

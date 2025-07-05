@@ -1,6 +1,7 @@
 ﻿using FormCraft.Domain.Aggregates.FormAggregate;
 using FormCraft.Domain.Aggregates.FormAggregate.Answers;
 using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
+using FormCraft.Domain.Aggregates.UserAggregate;
 using FormCraft.Infrastructure.Persistance.Configuration;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +23,7 @@ namespace FormCraft.Infrastructure
         public DbSet<TextAnswer> TextAnswers => Set<TextAnswer>();
         public DbSet<NumberAnswer> NumberAnswers => Set<NumberAnswer>();
         public DbSet<BooleanAnswer> BooleanAnswers => Set<BooleanAnswer>();
+        public DbSet<User> Users => Set<User>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,6 +33,7 @@ namespace FormCraft.Infrastructure
             modelBuilder.ApplyConfiguration(new TagConfiguration());
             modelBuilder.ApplyConfiguration(new TopicConfiguration());
             modelBuilder.ApplyConfiguration(new FormTagConfiguration());
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
             base.OnModelCreating(modelBuilder);
         }
 

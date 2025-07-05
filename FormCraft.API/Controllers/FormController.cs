@@ -1,5 +1,5 @@
 ﻿using FormCraft.Application.Commands;
-using FormCraft.Application.Models.RequestModels;
+using FormCraft.Application.Models.DTO;
 using FormCraft.Application.Models.ViewModels;
 using FormCraft.Application.Queries;
 using MediatR;
@@ -14,9 +14,17 @@ namespace FormCraft.API.Controllers
         }
 
         [HttpGet("getAllTemlates")]
-        public async Task<ActionResult<List<FormQuestionsView>>> GetAll()
+        public async Task<ActionResult<List<TemplateView>>> GetAll()
         {
-            var query = new GetAllFormsQuery();
+            var query = new GetAllTemplatesQuery();
+            var result = await Mediator.Send(query);
+            return Ok(result);
+        }
+
+        [HttpGet("getTemplateById{id}")]
+        public async Task<ActionResult<TemplateView>> GetById(Guid id)
+        {
+            var query = new GetTemplateQuery(id);
             var result = await Mediator.Send(query);
             return Ok(result);
         }
@@ -27,7 +35,7 @@ namespace FormCraft.API.Controllers
             [FromQuery] string description,
             [FromQuery] string topic,
             [FromQuery] IEnumerable<string> tags,
-            [FromBody] IEnumerable<QuestionRequest> questions,
+            [FromBody] IEnumerable<QuestionDTO> questions,
             [FromQuery] bool isPublic)
         {
             var command = new CreateNewFormCommand(title, description, topic, tags, questions, isPublic);

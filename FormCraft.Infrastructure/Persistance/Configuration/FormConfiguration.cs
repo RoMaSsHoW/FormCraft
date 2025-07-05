@@ -22,8 +22,6 @@ namespace FormCraft.Infrastructure.Persistance.Configuration
                 .HasColumnName("description")
                 .HasMaxLength(255)
                 .IsRequired();
-            //builder.Property(f => f.ImageUrl)
-            //    .HasColumnName("image_url");
             builder.Property(f => f.TopicName)
                 .HasColumnName("topic_name")
                 .HasMaxLength(255)
@@ -40,6 +38,9 @@ namespace FormCraft.Infrastructure.Persistance.Configuration
             builder.Property(f => f.CreationTime)
                 .HasColumnName("creation_time")
                 .IsRequired();
+
+            builder.HasIndex(f => f.Title);
+            builder.HasIndex(f => f.TopicName);
 
             builder.HasMany(f => f.Tags)
                 .WithOne()

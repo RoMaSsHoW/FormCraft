@@ -1,6 +1,6 @@
 ﻿namespace FormCraft.Application.Models.ViewModels
 {
-    public class FormQuestionsView
+    public class TemplateView
     {
         public Guid Id { get; set; }
         public Guid AuthorId { get; set; }

@@ -13,7 +13,7 @@ namespace FormCraft.Infrastructure.Persistance.Configuration
             builder.HasKey(ft => ft.Id);
 
             builder.Property(ft => ft.Id)
-                .HasColumnName("id")
+                .HasColumnName("Id")
                 .UseIdentityAlwaysColumn();
             builder.Property(ft => ft.FormId)
                 .HasColumnName("form_id")

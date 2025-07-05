@@ -12,12 +12,14 @@ namespace FormCraft.Infrastructure.Persistance.Configuration
             builder.HasKey(t => t.Id);
 
             builder.Property(t => t.Id)
-                .HasColumnName("id")
+                .HasColumnName("Id")
                 .UseIdentityAlwaysColumn();
             builder.Property(t => t.Name)
                 .HasColumnName("name")
                 .HasMaxLength(255)
                 .IsRequired();
+
+            builder.HasIndex(t => t.Name);
 
             builder.HasMany<FormTag>()
                 .WithOne()

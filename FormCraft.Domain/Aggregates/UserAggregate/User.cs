@@ -1,0 +1,54 @@
+﻿using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
+using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
+using FormCraft.Domain.Common;
+
+namespace FormCraft.Domain.Aggregates.UserAggregate
+{
+    public class User : Entity
+    {
+        public User() { }
+
+        private User(
+            string name,
+            string email,
+            string password,
+            string role,
+            string refreshToken,
+            IPasswordHasher passwordHasher)
+        {
+            const int MaxTextLength = 255;
+
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException("Name cannot be null or whitespace.");
+            if (name.Length > MaxTextLength)
+                throw new ArgumentException("Invalid name text length");
+            if (string.IsNullOrWhiteSpace(role))
+                throw new ArgumentNullException("Role cannot be null or whitespace.");
+            if (string.IsNullOrWhiteSpace(refreshToken))
+                throw new ArgumentNullException("RefreshToken cannot be null or whitespace.");
+
+            Name = name;
+            Email = new Email(email);
+            Password = Password.Create(password, passwordHasher);
+            Role = Role.FromName<Role>(role);
+            RefreshToken = refreshToken;
+        }
+
+        public string Name { get; private set; }
+        public Email Email { get; private set; }
+        public Password Password { get; private set; }
+        public Role Role { get; private set; }
+        public string RefreshToken { get; private set; }
+
+        public static User Registr(
+            string name,
+            string email,
+            string password,
+            string role,
+            string refreshToken,
+            IPasswordHasher passwordHasher)
+        {
+            return new User(name, email, password, role, refreshToken, passwordHasher);
+        }
+    }
+}

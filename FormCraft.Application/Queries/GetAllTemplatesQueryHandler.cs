@@ -7,15 +7,15 @@ using System.Data;
 
 namespace FormCraft.Application.Queries
 {
-    public class GetAllFormsQueryHandler : IQueryHandler<GetAllFormsQuery, IEnumerable<FormQuestionsView>>
+    public class GetAllTemplatesQueryHandler : IQueryHandler<GetAllTemplatesQuery, IEnumerable<TemplateView>>
     {
         private readonly IDbConnection _dbCconnection;
-        public GetAllFormsQueryHandler(IDbConnection dbCconnection)
+        public GetAllTemplatesQueryHandler(IDbConnection dbCconnection)
         {
             _dbCconnection = dbCconnection;
         }
 
-        public async Task<IEnumerable<FormQuestionsView>> Handle(GetAllFormsQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TemplateView>> Handle(GetAllTemplatesQuery request, CancellationToken cancellationToken)
         {
             const string sql = @"
                 SELECT
@@ -34,19 +34,19 @@ namespace FormCraft.Application.Queries
                     q.order_number AS OrderNumber
                 FROM form f
                 LEFT JOIN form_tag ft ON f.""Id"" = ft.form_id
-                LEFT JOIN tag t ON ft.tag_id = t.id
+                LEFT JOIN tag t ON ft.tag_id = t.Id
                 INNER JOIN  question q ON f.""Id"" = q.form_id
                 order by f.""Id"", q.order_number;";
 
-            var formDic = new Dictionary<Guid, FormQuestionsView>();
+            var formDic = new Dictionary<Guid, TemplateView>();
 
-            var result = await _dbCconnection.QueryAsync<Form, Tag, QuestionView, FormQuestionsView>(
+            var result = await _dbCconnection.QueryAsync<Form, Tag, QuestionView, TemplateView>(
                 sql,
                 (form, tag, question) =>
                 {
                     if (!formDic.TryGetValue(form.Id, out var formView))
                     {
-                        formView = new FormQuestionsView()
+                        formView = new TemplateView()
                         {
                             Id = form.Id,
                             AuthorId = form.AuthorId,

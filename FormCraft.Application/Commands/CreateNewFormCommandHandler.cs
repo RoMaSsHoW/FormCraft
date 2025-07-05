@@ -1,6 +1,6 @@
 ﻿using FormCraft.Application.Common.Messaging;
 using FormCraft.Application.Common.Persistance;
-using FormCraft.Application.Models.RequestModels;
+using FormCraft.Application.Models.DTO;
 using FormCraft.Domain.Aggregates.FormAggregate;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
@@ -91,7 +91,7 @@ namespace FormCraft.Application.Commands
                 ?? throw new ArgumentException("Failed to retrieve newly created form.");
         }
 
-        private async Task AddQuestionsAsync(Form form, IEnumerable<QuestionRequest> questions)
+        private async Task AddQuestionsAsync(Form form, IEnumerable<QuestionDTO> questions)
         {
             var newQuestions = new List<Question>();
 
