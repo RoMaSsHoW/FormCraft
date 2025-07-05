@@ -19,12 +19,12 @@ namespace FormCraft.Domain.Aggregates.UserAggregate.ValueObjects
 
         public string PasswordHash { get; }
 
-        public static Password Create(string password, IPasswordHasher passwordHasher)
+        public static Password Create(string password)
         {
             if (string.IsNullOrWhiteSpace(password))
                 throw new ArgumentNullException("Password cannot be null or whitespace.");
 
-            var passwordHash = passwordHasher.Hash(password);
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
             return new Password(passwordHash);
         }
 

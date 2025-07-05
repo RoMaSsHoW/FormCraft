@@ -16,7 +16,7 @@ namespace FormCraft.Domain.Aggregates.UserAggregate.ValueObjects
             if (!emailAddress.Contains("@"))
                 throw new ArgumentException("Invalid email address");
 
-            EmailAddress = emailAddress;
+            EmailAddress = emailAddress.ToLower();
         }
 
         public string EmailAddress { get; }

@@ -13,8 +13,7 @@ namespace FormCraft.Domain.Aggregates.UserAggregate
             string email,
             string password,
             string role,
-            string refreshToken,
-            IPasswordHasher passwordHasher)
+            string refreshToken)
         {
             const int MaxTextLength = 255;
 
@@ -29,7 +28,7 @@ namespace FormCraft.Domain.Aggregates.UserAggregate
 
             Name = name;
             Email = new Email(email);
-            Password = Password.Create(password, passwordHasher);
+            Password = Password.Create(password);
             Role = Role.FromName<Role>(role);
             RefreshToken = refreshToken;
         }
@@ -45,10 +44,14 @@ namespace FormCraft.Domain.Aggregates.UserAggregate
             string email,
             string password,
             string role,
-            string refreshToken,
-            IPasswordHasher passwordHasher)
+            string refreshToken)
         {
-            return new User(name, email, password, role, refreshToken, passwordHasher);
+            return new User(name, email, password, role, refreshToken);
+        }
+
+        public bool Verify(string password)
+        {
+            return BCrypt.Net.BCrypt.Verify(password, Password.PasswordHash);
         }
     }
 }

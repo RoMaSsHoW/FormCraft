@@ -2,6 +2,7 @@
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mail;
 
 namespace FormCraft.Infrastructure.Persistance.Repositories
 {
@@ -14,12 +15,15 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<User> FindByEmail(string emaiAddress)
+        public async Task<User> FindByEmail(string emailAddress)
         {
-            var email = new Email(emaiAddress);
+            if (string.IsNullOrWhiteSpace(emailAddress))
+            {
+                throw new ArgumentException("Email address cannot be null or whitespace.", nameof(emailAddress));
+            }
 
             var user = await _dbContext.Users
-                .FirstOrDefaultAsync(u => u.Email == email);
+                .FirstOrDefaultAsync(u => u.Email.EmailAddress == emailAddress);
 
             return user;
         }

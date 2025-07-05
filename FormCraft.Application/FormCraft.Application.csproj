@@ -17,8 +17,4 @@
     <ProjectReference Include="..\FormCraft.Domain\FormCraft.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\RequestModels\" />
-  </ItemGroup>
-
 </Project>
