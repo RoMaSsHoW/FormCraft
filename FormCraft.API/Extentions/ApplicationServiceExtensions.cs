@@ -23,11 +23,11 @@ namespace FormCraft.API.Extentions
         {
             services.Configure<JWTSettings>(configuration.GetSection(nameof(JWTSettings)));
 
+            ConfigureJwtAuthenticationAndAuthorization(services, configuration);
+
+            services.AddHttpContextAccessor();
+
             ConfigureServices(services);
-
-            ConfigureJwtAuthentication(services, configuration);
-
-            services.AddAuthorization();
 
             ConfigureSettigsForDapper(services, configuration);
 
@@ -41,6 +41,7 @@ namespace FormCraft.API.Extentions
         private static void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             services.AddSingleton<ITopicExistenceChecker, TopicExistenceChecker>();
             services.AddSingleton<IUserRoleChecker, UserRoleChecker>();
@@ -54,7 +55,7 @@ namespace FormCraft.API.Extentions
             services.AddScoped<IUserRepository, UserRepository>();
         }
 
-        private static void ConfigureJwtAuthentication(IServiceCollection services, IConfiguration configuration)
+        private static void ConfigureJwtAuthenticationAndAuthorization(IServiceCollection services, IConfiguration configuration)
         {
             var jwtSettings = configuration.GetSection(nameof(JWTSettings)).Get<JWTSettings>();
 
@@ -77,6 +78,8 @@ namespace FormCraft.API.Extentions
                         IssuerSigningKey = signingKey
                     };
                 });
+
+            services.AddAuthorization();
         }
 
         private static void ConfigureDbContext(IServiceCollection services, IConfiguration configuration)

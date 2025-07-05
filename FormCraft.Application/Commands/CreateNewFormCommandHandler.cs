@@ -1,5 +1,6 @@
 ﻿using FormCraft.Application.Common.Messaging;
 using FormCraft.Application.Common.Persistance;
+using FormCraft.Application.Intefaces;
 using FormCraft.Application.Models.DTO;
 using FormCraft.Domain.Aggregates.FormAggregate;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
@@ -14,6 +15,7 @@ namespace FormCraft.Application.Commands
         private readonly ITagRepository _tagRepository;
         private readonly ITopicExistenceChecker _topicExisteceChecker;
         private readonly IUserRoleChecker _userRoleChecker;
+        private readonly ICurrentUserService _currentUserService;
         private readonly IUnitOfWork _unitOfWork;
 
         public CreateNewFormCommandHandler(
@@ -22,6 +24,7 @@ namespace FormCraft.Application.Commands
             ITagRepository tagRepository,
             ITopicExistenceChecker topicExisteceChecker,
             IUserRoleChecker userRoleChecker,
+            ICurrentUserService currentUserService,
             IUnitOfWork unitOfWork)
         {
             _formRepository = formRepository;
@@ -29,6 +32,7 @@ namespace FormCraft.Application.Commands
             _tagRepository = tagRepository;
             _topicExisteceChecker = topicExisteceChecker;
             _userRoleChecker = userRoleChecker;
+            _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
         }
 
@@ -74,10 +78,13 @@ namespace FormCraft.Application.Commands
 
         private async Task<Form> CreateFormAsync(CreateNewFormCommand request, List<Tag> tags)
         {
-            var _testAuthor = Guid.NewGuid();
+            var _testAuthor = _currentUserService.GetUserId();
+            if(!_testAuthor.HasValue)
+                throw new ArgumentException("123456789");
+
 
             var form = Form.Create(
-                    _testAuthor,
+                    _testAuthor.Value,
                     request.Title,
                     request.Description,
                     //request.ImageUrl,
