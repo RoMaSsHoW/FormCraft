@@ -1,25 +1,27 @@
 ﻿using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
+using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
 
 namespace FormCraft.Domain.Aggregates.FormAggregate.Answers
 {
     public class BooleanAnswer : Answer
     {
+        private readonly ICurrentUserService _currentUserService;
+
         public BooleanAnswer() { }
 
         private BooleanAnswer(
             Guid questionId,
-            Guid authorId,
-            bool value)
+            bool value,
+            ICurrentUserService currentUserService)
         {
+            _currentUserService = currentUserService;
+
             if (questionId == Guid.Empty)
                 throw new ArgumentException("Question cannot be empty");
 
-            if (authorId == Guid.Empty)
-                throw new ArgumentException("AuthorId cannot be empty");
-
+            SetAuthorId();
             QuestionId = questionId;
-            AuthorId = authorId;
             Value = value;
         }
 
@@ -28,18 +30,40 @@ namespace FormCraft.Domain.Aggregates.FormAggregate.Answers
 
         public static BooleanAnswer Create(
             Guid questionId,
-            Guid authorId,
-            bool value)
+            bool value,
+            ICurrentUserService currentUserService)
         {
             return new BooleanAnswer(
                 questionId,
-                authorId,
-                value);
+                value,
+                currentUserService);
         }
 
-        public void ChangeValue(bool value, Guid userId, IUserRoleChecker userRoleChecker)
+        private void SetAuthorId()
         {
-            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
+            var authorId = _currentUserService.GetUserId();
+            if (authorId == Guid.Empty)
+                throw new UnauthorizedAccessException("User unauthorized");
+
+            AuthorId = (Guid)authorId!;
+        }
+
+        private bool UserIsAuthorOrAdmin()
+        {
+            var userId = _currentUserService.GetUserId();
+            var userRole = _currentUserService.GetRole();
+
+            if (userId != Guid.Empty && !string.IsNullOrEmpty(userRole))
+            {
+                return userId == AuthorId || Role.FromName<Role>(userRole) == Role.Admin;
+            }
+
+            throw new UnauthorizedAccessException("User unauthorized");
+        }
+
+        public void ChangeValue(bool value)
+        {
+            if (!UserIsAuthorOrAdmin())
                 throw new ArgumentException("User not author or admin");
 
             if (value == Value)

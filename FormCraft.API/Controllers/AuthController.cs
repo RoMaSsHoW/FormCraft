@@ -85,7 +85,7 @@ namespace FormCraft.API.Controllers
             var refreshToken = string.IsNullOrEmpty(user.RefreshToken) || IsRefreshTokenExpired(user)
                 ? _tokenService.GenerateRefreshToken()
                 : user.RefreshToken;
-                
+
             if (user.RefreshToken != refreshToken)
             {
                 user.ChangeRefreshToken(refreshToken);
@@ -98,6 +98,22 @@ namespace FormCraft.API.Controllers
                 return Ok(new AuthResponse(accessToken, refreshToken));
             }
             return Unauthorized("Wrong password");
+        }
+
+        [HttpPost("refreshAccessToken")]
+        public async Task<ActionResult> RefreshAccessTiken([FromQuery] string refreshToken)
+        {
+            var user = await _userRepository.FindByRefreshTokenAsync(refreshToken);
+            if (user == null || IsRefreshTokenExpired(user))
+                return Unauthorized();
+
+            var accessToken = _tokenService.GenerateAccessToken(user);
+
+            var newRefreshToken = _tokenService.GenerateRefreshToken();
+            user.ChangeRefreshToken(newRefreshToken);
+            await _unitOfWork.CommitAsync();
+
+            return Ok(new AuthResponse(accessToken, newRefreshToken));
         }
 
         private bool IsRefreshTokenExpired(User user)

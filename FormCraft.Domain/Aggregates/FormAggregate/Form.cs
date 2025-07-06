@@ -1,29 +1,30 @@
 ﻿using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
+using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
 using FormCraft.Domain.Common;
 
 namespace FormCraft.Domain.Aggregates.FormAggregate
 {
     public class Form : Entity
     {
+        private readonly ICurrentUserService _currentUserService;
         private readonly List<FormTag> _tags = new List<FormTag>();
         private readonly List<Question> _questions = new List<Question>();
 
         public Form() { }
 
         private Form(
-            Guid authorId,
             string title,
             string description,
             string topic,
             IEnumerable<Tag> tags,
-            bool isPublic)
+            bool isPublic,
+            ICurrentUserService currentUserService)
         {
-            const int MaxTextLength = 255;
+            _currentUserService = currentUserService;
 
-            if (authorId == Guid.Empty)
-                throw new ArgumentException("AuthorId cannot be empty");
+            const int MaxTextLength = 255;
 
             if (string.IsNullOrWhiteSpace(title))
                 throw new ArgumentException("Title cannot be null or whitespace.");
@@ -37,7 +38,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             if (description.Length > MaxTextLength)
                 throw new ArgumentException("Invalid description text length");
 
-            AuthorId = authorId;
+            SetAuthorId();
             Title = title;
             Description = description;
             TopicName = topic;
@@ -47,7 +48,6 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             if (tags.Count() > 0)
                 foreach (var tag in tags)
                     AddTag(tag);
-
         }
 
         public Guid AuthorId { get; private set; }
@@ -57,49 +57,63 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
         public IReadOnlyCollection<FormTag> Tags => _tags.AsReadOnly();
         public IReadOnlyCollection<Question> Questions => _questions.AsReadOnly();
         public bool IsPublic { get; private set; }
-
-        //[Timestamp]
-        //public byte[] Version { get; private set; }
         public DateTime LastModified { get; private set; }
         public DateTime CreationTime { get; private set; }
 
         public static Form Create(
-            Guid authorId,
             string title,
             string description,
             string topic,
             IEnumerable<Tag> tags,
-            bool isPublic)
+            bool isPublic,
+            ICurrentUserService currentUserService)
         {
             return new Form(
-                authorId,
                 title,
                 description,
                 topic,
                 tags,
-                isPublic);
+                isPublic,
+                currentUserService);
         }
 
-        private void AddTag(Tag tag)
+        private void SetAuthorId()
         {
+            var authorId = _currentUserService.GetUserId();
+            if (authorId == Guid.Empty)
+                throw new UnauthorizedAccessException("User unauthorized");
+
+            AuthorId = (Guid)authorId!;
+        }
+
+        private bool UserIsAuthorOrAdmin()
+        {
+            var userId = _currentUserService.GetUserId();
+            var userRole = _currentUserService.GetRole();
+
+            if (userId != Guid.Empty && !string.IsNullOrEmpty(userRole))
+            {
+                return userId == AuthorId || Role.FromName<Role>(userRole) == Role.Admin;
+            }
+
+            throw new UnauthorizedAccessException("User unauthorized");
+        }
+
+        public void AddTag(Tag tag)
+        {
+            if (!UserIsAuthorOrAdmin())
+                throw new ArgumentException("User not author or admin");
+
             if (_tags.Any(t => t.Id == tag.Id)) return;
             var formTag = new FormTag(Id, tag.Id);
             _tags.Add(formTag);
         }
 
-        public void AddTag(Tag tag, Guid userId, IUserRoleChecker userRoleChecker)
-        {
-            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
-                throw new ArgumentException("User not author or admin");
-
-            AddTag(tag);
-        }
-
-        public void ChangeTitle(string text, Guid userId, IUserRoleChecker userRoleChecker)
+        public void ChangeTitle(string text)
         {
             const int MaxTitleLength = 255;
 
-            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
+            if (!UserIsAuthorOrAdmin())
                 throw new ArgumentException("User not author or admin");
 
             if (string.IsNullOrWhiteSpace(text))
@@ -114,11 +128,11 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             Title = text;
         }
 
-        public void ChangeDescription(string text, Guid userId, IUserRoleChecker userRoleChecker)
+        public void ChangeDescription(string text)
         {
             const int MaxDescriptionLength = 255;
 
-            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
+            if (!UserIsAuthorOrAdmin())
                 throw new ArgumentException("User not author or admin");
 
             if (string.IsNullOrWhiteSpace(text))
@@ -133,9 +147,9 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             Description = text;
         }
 
-        public void ChangeTopic(string topic, ITopicExistenceChecker topicExisteceChecker, Guid userId, IUserRoleChecker userRoleChecker)
+        public void ChangeTopic(string topic, ITopicExistenceChecker topicExisteceChecker)
         {
-            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
+            if (!UserIsAuthorOrAdmin())
                 throw new ArgumentException("User not author or admin");
 
             if (!topicExisteceChecker.IsExist(topic))
@@ -147,9 +161,9 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             TopicName = topic;
         }
 
-        public void ChangeVisibility(bool isPublic, Guid userId, IUserRoleChecker userRoleChecker)
+        public void ChangeVisibility(bool isPublic)
         {
-            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
+            if (!UserIsAuthorOrAdmin())
                 throw new ArgumentException("User not author or admin");
 
             if (isPublic == IsPublic)
@@ -158,9 +172,9 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             IsPublic = isPublic;
         }
 
-        public IEnumerable<Question> AddQuestion(string questionText, string questionType, Guid userId, IUserRoleChecker userRoleChecker)
+        public IEnumerable<Question> AddQuestion(string questionText, string questionType)
         {
-            if (!(userRoleChecker.IsAdmin() || userId == AuthorId))
+            if (!UserIsAuthorOrAdmin())
                 throw new ArgumentException("User not author or admin");
 
             if (_questions.Any(q => q.Text == questionText && q.Type == QuestionType.FromName<QuestionType>(questionType)))
@@ -170,16 +184,16 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
 
             var lastOrderNumber = _questions.Any() ? _questions.Max(q => q.OrderNumber) : 0;
 
-            var question = Question.Create(Id, AuthorId, questionText, questionType, lastOrderNumber + 1);
+            var question = Question.Create(Id, AuthorId, questionText, questionType, lastOrderNumber + 1, _currentUserService);
 
             _questions.Add(question);
 
             return _questions;
         }
 
-        public void ChangeQuestionOrder(List<Guid> questionIds, Guid userId, IUserRoleChecker userRoleChecker)
+        public void ChangeQuestionOrder(List<Guid> questionIds)
         {
-            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
+            if (!UserIsAuthorOrAdmin())
                 throw new ArgumentException("User not author or admin");
 
             if (questionIds == null || questionIds.Count == 0)
@@ -190,7 +204,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
                 var question = _questions.FirstOrDefault(q => q.Id == questionIds[i]);
                 if (question == null)
                     throw new InvalidOperationException($"Question with ID {questionIds[i]} not found.");
-                question.ChangeOrderNumber(i + 1, userId, userRoleChecker);
+                question.ChangeOrderNumber(i + 1);
             }
         }
     }

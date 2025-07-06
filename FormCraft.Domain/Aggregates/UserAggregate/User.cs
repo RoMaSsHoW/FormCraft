@@ -1,5 +1,4 @@
-﻿using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
-using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
+﻿using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
 using FormCraft.Domain.Common;
 
 namespace FormCraft.Domain.Aggregates.UserAggregate

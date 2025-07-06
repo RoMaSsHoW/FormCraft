@@ -1,6 +1,5 @@
 ﻿using FormCraft.Application.Common.Messaging;
 using FormCraft.Application.Common.Persistance;
-using FormCraft.Application.Intefaces;
 using FormCraft.Application.Models.DTO;
 using FormCraft.Domain.Aggregates.FormAggregate;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
@@ -85,13 +84,12 @@ namespace FormCraft.Application.Commands
 
 
             var form = Form.Create(
-                    _testAuthor.Value,
                     request.Title,
                     request.Description,
-                    //request.ImageUrl,
                     request.Topic,
                     tags,
-                    request.IsPublic);
+                    request.IsPublic,
+                    _currentUserService);
 
             await _formRepository.AddAsync(form);
             await _unitOfWork.CommitAsync();
@@ -107,9 +105,7 @@ namespace FormCraft.Application.Commands
             {
                 newQuestions = (List<Question>)form.AddQuestion(
                     question.Text,
-                    question.Type,
-                    form.AuthorId,
-                    _userRoleChecker);
+                    question.Type);
 
             }
             if (newQuestions.Count > 0)

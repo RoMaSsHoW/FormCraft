@@ -1,11 +1,13 @@
 ﻿using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
+using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
 using FormCraft.Domain.Common;
 
 namespace FormCraft.Domain.Aggregates.FormAggregate
 {
     public class Question : Entity
     {
+        private readonly ICurrentUserService _currentUserService;
         private readonly List<Answer> _answers = new List<Answer>();
 
         public Question() { }
@@ -15,8 +17,11 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             Guid authorId,
             string text,
             string questionType,
-            int orderNumber)
+            int orderNumber,
+            ICurrentUserService currentUserService)
         {
+            _currentUserService = currentUserService;
+
             const int MaxTextLength = 255;
 
             if (formId == Guid.Empty)
@@ -53,21 +58,23 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             Guid authorId,
             string text,
             string questionType,
-            int orderNumber)
+            int orderNumber,
+            ICurrentUserService currentUserService)
         {
             return new Question(
                 formId,
                 authorId,
                 text,
                 questionType,
-                orderNumber);
+                orderNumber,
+                currentUserService);
         }
 
-        public void ChangeText(string text, Guid userId, IUserRoleChecker userRoleChecker)
+        public void ChangeText(string text)
         {
             const int MaxTextLength = 255;
 
-            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
+            if (!UserIsAuthorOrAdmin())
                 throw new ArgumentException("User not author or admin");
 
             if (string.IsNullOrWhiteSpace(text))
@@ -82,9 +89,9 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             Text = text;
         }
 
-        public void ChangeType(string questionType, Guid userId, IUserRoleChecker userRoleChecker)
+        public void ChangeType(string questionType)
         {
-            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
+            if (!UserIsAuthorOrAdmin())
                 throw new ArgumentException("User not author or admin");
 
             if (string.IsNullOrWhiteSpace(questionType))
@@ -96,9 +103,9 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             Type = QuestionType.FromName<QuestionType>(questionType);
         }
 
-        public void ChangeOrderNumber(int order, Guid userId, IUserRoleChecker userRoleChecker)
+        public void ChangeOrderNumber(int order)
         {
-            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
+            if (!UserIsAuthorOrAdmin())
                 throw new ArgumentException("User not author or admin");
 
             if (order <= 0)
@@ -119,6 +126,19 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
                 throw new ArgumentException("Answer must be of type Question");
 
             _answers.Add(answer);
+        }
+
+        private bool UserIsAuthorOrAdmin()
+        {
+            var userId = _currentUserService.GetUserId();
+            var userRole = _currentUserService.GetRole();
+
+            if (userId != Guid.Empty && !string.IsNullOrEmpty(userRole))
+            {
+                return userId == AuthorId || Role.FromName<Role>(userRole) == Role.Admin;
+            }
+
+            throw new UnauthorizedAccessException("User unauthorized");
         }
     }
 }

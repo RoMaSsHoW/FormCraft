@@ -26,6 +26,17 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
             return user;
         }
 
+        public async Task<User> FindByRefreshTokenAsync(string refreshToken)
+        {
+            if (string.IsNullOrWhiteSpace(refreshToken))
+                throw new ArgumentException("refreshToken cannot be null or whitespace.", nameof(refreshToken));
+
+            var user = await _dbContext.Users
+                .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+
+            return user;
+        }
+
         public User FindById(Guid userId)
         {
             if (userId == Guid.Empty)
@@ -41,5 +52,7 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
         {
             await _dbContext.Users.AddAsync(user);
         }
+
+        
     }
 }

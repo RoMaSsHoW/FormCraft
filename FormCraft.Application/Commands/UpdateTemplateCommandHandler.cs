@@ -43,10 +43,10 @@ namespace FormCraft.Application.Commands
 
             var user = existenceTemplate.AuthorId; // ВРЕМЕННО
 
-            existenceTemplate.ChangeTitle(request.newTemplateInformation.Title, user, _userRoleChecker);
-            existenceTemplate.ChangeDescription(request.newTemplateInformation.Description, user, _userRoleChecker);
-            existenceTemplate.ChangeTopic(request.newTemplateInformation.TopicName, _topicExisteceChecker, user, _userRoleChecker);
-            existenceTemplate.ChangeVisibility(request.newTemplateInformation.IsPublic, user, _userRoleChecker);
+            //existenceTemplate.ChangeTitle(request.newTemplateInformation.Title, user, _userRoleChecker);
+            //existenceTemplate.ChangeDescription(request.newTemplateInformation.Description, user, _userRoleChecker);
+            //existenceTemplate.ChangeTopic(request.newTemplateInformation.TopicName, _topicExisteceChecker, user, _userRoleChecker);
+            //existenceTemplate.ChangeVisibility(request.newTemplateInformation.IsPublic, user, _userRoleChecker);
 
             
 

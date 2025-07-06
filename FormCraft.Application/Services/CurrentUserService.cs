@@ -1,4 +1,5 @@
 ﻿using FormCraft.Application.Intefaces;
+using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 
@@ -28,7 +29,7 @@ namespace FormCraft.Application.Services
 
             var userIdClaim = _accessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrWhiteSpace(userIdClaim))
-                return null;
+                return Guid.Empty;
 
             return Guid.TryParse(userIdClaim, out var userId) ? userId : Guid.Empty;
         }
