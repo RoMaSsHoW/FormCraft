@@ -1,5 +1,5 @@
-﻿using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
-using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
+﻿using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
+using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using FormCraft.Domain.Common;
 
 namespace FormCraft.Domain.Aggregates.FormAggregate
@@ -67,7 +67,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
         {
             const int MaxTextLength = 255;
 
-            if (!userRoleChecker.IsAdmin(userId) || userId != AuthorId)
+            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
                 throw new ArgumentException("User not author or admin");
 
             if (string.IsNullOrWhiteSpace(text))
@@ -84,7 +84,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
 
         public void ChangeType(string questionType, Guid userId, IUserRoleChecker userRoleChecker)
         {
-            if (!userRoleChecker.IsAdmin(userId) || userId != AuthorId)
+            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
                 throw new ArgumentException("User not author or admin");
 
             if (string.IsNullOrWhiteSpace(questionType))
@@ -98,7 +98,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
 
         public void ChangeOrderNumber(int order, Guid userId, IUserRoleChecker userRoleChecker)
         {
-            if (!userRoleChecker.IsAdmin(userId) || userId != AuthorId)
+            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
                 throw new ArgumentException("User not author or admin");
 
             if (order <= 0)

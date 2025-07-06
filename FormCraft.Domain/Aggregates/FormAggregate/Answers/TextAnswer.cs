@@ -1,5 +1,5 @@
-﻿using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
-using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
+﻿using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
+using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 
 namespace FormCraft.Domain.Aggregates.FormAggregate.Answers
 {
@@ -49,7 +49,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate.Answers
         {
             const int MaxAnswerLength = 255;
 
-            if (!userRoleChecker.IsAdmin(userId) || userId != AuthorId)
+            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
                 throw new ArgumentException("User not author or admin");
 
             if (string.IsNullOrWhiteSpace(value))

@@ -3,7 +3,7 @@ using FormCraft.Application.Models.DTO;
 
 namespace FormCraft.Application.Commands
 {
-    public record CreateNewFormCommand(
+    public record CreateNewTemplateCommand(
         string Title,
         string Description,
         string Topic,
@@ -11,7 +11,3 @@ namespace FormCraft.Application.Commands
         IEnumerable<QuestionDTO> Questions,
         bool IsPublic) : ICommand;
 }
-
-
-//брать юзера из контекста
-//Получить пэйлоад клаймов прикрепить к контексту

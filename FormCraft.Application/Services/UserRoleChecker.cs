@@ -1,17 +1,23 @@
-﻿using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FormCraft.Application.Intefaces;
+using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
+using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
 
 namespace FormCraft.Application.Services
 {
     public class UserRoleChecker : IUserRoleChecker
     {
-        public bool IsAdmin(Guid userId)
+        private readonly ICurrentUserService _currentUserService;
+
+        public UserRoleChecker(ICurrentUserService currentUserService)
         {
-            return true; //временное решение
+            _currentUserService = currentUserService;
+        }
+
+        public bool IsAdmin()
+        {
+            var userRole = Role.FromName<Role>(_currentUserService.GetRole());
+
+            return userRole == Role.Admin;
         }
     }
 }

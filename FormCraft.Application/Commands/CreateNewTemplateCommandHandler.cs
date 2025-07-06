@@ -5,10 +5,11 @@ using FormCraft.Application.Models.DTO;
 using FormCraft.Domain.Aggregates.FormAggregate;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
+using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 
 namespace FormCraft.Application.Commands
 {
-    public class CreateNewFormCommandHandler : ICommandHandler<CreateNewFormCommand>
+    public class CreateNewTemplateCommandHandler : ICommandHandler<CreateNewTemplateCommand>
     {
         private readonly IFormRepository _formRepository;
         private readonly IQuestionRepository _questionRepository;
@@ -18,7 +19,7 @@ namespace FormCraft.Application.Commands
         private readonly ICurrentUserService _currentUserService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CreateNewFormCommandHandler(
+        public CreateNewTemplateCommandHandler(
             IFormRepository formRepository,
             IQuestionRepository questionRepository,
             ITagRepository tagRepository,
@@ -36,7 +37,7 @@ namespace FormCraft.Application.Commands
             _unitOfWork = unitOfWork;
         }
 
-        public async Task Handle(CreateNewFormCommand request, CancellationToken cancellationToken)
+        public async Task Handle(CreateNewTemplateCommand request, CancellationToken cancellationToken)
         {
             ValidateRequest(request);
             var tags = await GetExistenceAndCreateNewTags(request.Tags);
@@ -44,7 +45,7 @@ namespace FormCraft.Application.Commands
             await AddQuestionsAsync(form, request.Questions);
         }
 
-        private void ValidateRequest(CreateNewFormCommand request)
+        private void ValidateRequest(CreateNewTemplateCommand request)
         {
             if (!_topicExisteceChecker.IsExist(request.Topic))
                 throw new ArgumentException("Topic name not exist");
@@ -76,7 +77,7 @@ namespace FormCraft.Application.Commands
             return tags;
         }
 
-        private async Task<Form> CreateFormAsync(CreateNewFormCommand request, List<Tag> tags)
+        private async Task<Form> CreateFormAsync(CreateNewTemplateCommand request, List<Tag> tags)
         {
             var _testAuthor = _currentUserService.GetUserId();
             if(!_testAuthor.HasValue)

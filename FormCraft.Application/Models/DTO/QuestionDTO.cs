@@ -2,7 +2,7 @@
 {
     public class QuestionDTO
     {
-        public string Text { get; set; } = string.Empty;
-        public string Type { get; set; } = string.Empty;
+        public string Text { get; init; } = string.Empty;
+        public string Type { get; init; } = string.Empty;
     }
 }

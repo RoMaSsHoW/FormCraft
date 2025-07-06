@@ -15,15 +15,24 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<User> FindByEmail(string emailAddress)
+        public async Task<User> FindByEmailAsync(string emailAddress)
         {
             if (string.IsNullOrWhiteSpace(emailAddress))
-            {
                 throw new ArgumentException("Email address cannot be null or whitespace.", nameof(emailAddress));
-            }
 
             var user = await _dbContext.Users
                 .FirstOrDefaultAsync(u => u.Email.EmailAddress == emailAddress);
+
+            return user;
+        }
+
+        public User FindById(Guid userId)
+        {
+            if (userId == Guid.Empty)
+                throw new ArgumentException($"User Id cannot be null", nameof(userId));
+
+            var user = _dbContext.Users
+                .FirstOrDefault(u => u.Id == userId);
 
             return user;
         }

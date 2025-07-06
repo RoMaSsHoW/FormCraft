@@ -42,9 +42,9 @@ namespace FormCraft.API.Extentions
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddScoped<IUserRoleChecker, UserRoleChecker>();
 
             services.AddSingleton<ITopicExistenceChecker, TopicExistenceChecker>();
-            services.AddSingleton<IUserRoleChecker, UserRoleChecker>();
             services.AddSingleton<ITokenService, TokenService>();
 
             services.AddScoped<IFormRepository, FormRepository>();
@@ -103,7 +103,7 @@ namespace FormCraft.API.Extentions
             services.AddMediatR(mc =>
             {
                 mc.RegisterServicesFromAssemblies(
-                    typeof(CreateNewFormCommand).Assembly,
+                    typeof(CreateNewTemplateCommand).Assembly,
                     typeof(GetAllTemplatesQuery).Assembly,
                     typeof(GetTemplateQuery).Assembly);
             });

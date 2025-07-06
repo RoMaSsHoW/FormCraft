@@ -1,7 +1,7 @@
 ﻿namespace FormCraft.Domain.Aggregates.UserAggregate.Interfaces
 {
-    public interface IPasswordHasher
+    public interface IUserRoleChecker
     {
-        string Hash(string password);
+        bool IsAdmin();
     }
 }

@@ -38,7 +38,7 @@ namespace FormCraft.Application.Services
             audience: _jwtSettings.Audience,
             claims: claims,
             signingCredentials: signingCredentials,
-            expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryTime));
+            expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpireTime));
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }

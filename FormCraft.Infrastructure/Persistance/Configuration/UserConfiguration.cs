@@ -44,6 +44,8 @@ namespace FormCraft.Infrastructure.Persistance.Configuration
             builder.Property(u => u.RefreshToken)
                 .HasColumnName("refresh_token")
                 .IsRequired();
+            builder.Property(u => u.RefreshTokenLastUpdated)
+                .HasColumnName("refresh_token_last_updated");
         }
     }
 }

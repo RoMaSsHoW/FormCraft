@@ -2,7 +2,8 @@
 {
     public interface IUserRepository
     {
-        Task<User> FindByEmail(string email);
+        Task<User> FindByEmailAsync(string email);
+        User FindById(Guid userId);
         Task AddAsync(User user);
     }
 }

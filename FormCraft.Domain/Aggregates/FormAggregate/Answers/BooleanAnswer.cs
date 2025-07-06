@@ -1,5 +1,5 @@
-﻿using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
-using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
+﻿using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
+using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 
 namespace FormCraft.Domain.Aggregates.FormAggregate.Answers
 {
@@ -39,7 +39,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate.Answers
 
         public void ChangeValue(bool value, Guid userId, IUserRoleChecker userRoleChecker)
         {
-            if (!userRoleChecker.IsAdmin(userId) || userId != AuthorId)
+            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
                 throw new ArgumentException("User not author or admin");
 
             if (value == Value)

@@ -1,6 +1,7 @@
 ﻿using FormCraft.Application.Common.Messaging;
 using FormCraft.Application.Common.Persistance;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
+using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;

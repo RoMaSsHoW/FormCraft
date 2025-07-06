@@ -38,7 +38,7 @@ namespace FormCraft.API.Controllers
             [FromBody] IEnumerable<QuestionDTO> questions,
             [FromQuery] bool isPublic)
         {
-            var command = new CreateNewFormCommand(title, description, topic, tags, questions, isPublic);
+            var command = new CreateNewTemplateCommand(title, description, topic, tags, questions, isPublic);
             await Mediator.Send(command);
             return Ok();
         }

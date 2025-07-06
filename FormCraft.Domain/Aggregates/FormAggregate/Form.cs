@@ -1,5 +1,6 @@
 ﻿using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
+using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using FormCraft.Domain.Common;
 
 namespace FormCraft.Domain.Aggregates.FormAggregate
@@ -88,7 +89,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
 
         public void AddTag(Tag tag, Guid userId, IUserRoleChecker userRoleChecker)
         {
-            if (!userRoleChecker.IsAdmin(userId) || userId != AuthorId)
+            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
                 throw new ArgumentException("User not author or admin");
 
             AddTag(tag);
@@ -98,7 +99,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
         {
             const int MaxTitleLength = 255;
 
-            if (!userRoleChecker.IsAdmin(userId) || userId != AuthorId)
+            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
                 throw new ArgumentException("User not author or admin");
 
             if (string.IsNullOrWhiteSpace(text))
@@ -117,7 +118,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
         {
             const int MaxDescriptionLength = 255;
 
-            if (!userRoleChecker.IsAdmin(userId) || userId != AuthorId)
+            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
                 throw new ArgumentException("User not author or admin");
 
             if (string.IsNullOrWhiteSpace(text))
@@ -134,7 +135,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
 
         public void ChangeTopic(string topic, ITopicExistenceChecker topicExisteceChecker, Guid userId, IUserRoleChecker userRoleChecker)
         {
-            if (!userRoleChecker.IsAdmin(userId) || userId != AuthorId)
+            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
                 throw new ArgumentException("User not author or admin");
 
             if (!topicExisteceChecker.IsExist(topic))
@@ -148,7 +149,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
 
         public void ChangeVisibility(bool isPublic, Guid userId, IUserRoleChecker userRoleChecker)
         {
-            if (!userRoleChecker.IsAdmin(userId) || userId != AuthorId)
+            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
                 throw new ArgumentException("User not author or admin");
 
             if (isPublic == IsPublic)
@@ -159,7 +160,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
 
         public IEnumerable<Question> AddQuestion(string questionText, string questionType, Guid userId, IUserRoleChecker userRoleChecker)
         {
-            if (!userRoleChecker.IsAdmin(userId) || userId != AuthorId)
+            if (!(userRoleChecker.IsAdmin() || userId == AuthorId))
                 throw new ArgumentException("User not author or admin");
 
             if (_questions.Any(q => q.Text == questionText && q.Type == QuestionType.FromName<QuestionType>(questionType)))
@@ -178,7 +179,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
 
         public void ChangeQuestionOrder(List<Guid> questionIds, Guid userId, IUserRoleChecker userRoleChecker)
         {
-            if (!userRoleChecker.IsAdmin(userId) || userId != AuthorId)
+            if (!userRoleChecker.IsAdmin() || userId != AuthorId)
                 throw new ArgumentException("User not author or admin");
 
             if (questionIds == null || questionIds.Count == 0)

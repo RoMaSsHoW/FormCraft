@@ -5,6 +5,7 @@ namespace FormCraft.Domain.Aggregates.UserAggregate.ValueObjects
     public class Email : ValueObject
     {
         public Email() { }
+
         public Email(string emailAddress)
         {
             const int MaxTextLength = 255;

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FormCraft.Infrastructure.Persistance.Migrations
 {
     [DbContext(typeof(FormCraftDbContext))]
-    [Migration("20250705123332_initial")]
+    [Migration("20250706180140_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -235,6 +235,10 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("refresh_token");
+
+                    b.Property<DateTime>("RefreshTokenLastUpdated")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("refresh_token_last_updated");
 
                     b.Property<string>("Role")
                         .IsRequired()

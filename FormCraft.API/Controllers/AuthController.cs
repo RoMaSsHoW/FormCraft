@@ -1,9 +1,12 @@
 ﻿using FormCraft.Application.Common.Persistance;
 using FormCraft.Application.Intefaces;
+using FormCraft.Application.Models.DTO;
 using FormCraft.Application.Models.RequestModels;
 using FormCraft.Application.Models.ViewModels;
+using FormCraft.Domain.Aggregates.UserAggregate;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace FormCraft.API.Controllers
 {
@@ -14,15 +17,18 @@ namespace FormCraft.API.Controllers
         private readonly IUserRepository _userRepository;
         private readonly ITokenService _tokenService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly JWTSettings _jwtSettings;
 
         public AuthController(
             IUserRepository userRepository,
             ITokenService tokenService,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            IOptions<JWTSettings> jwtSettigs)
         {
             _userRepository = userRepository;
             _tokenService = tokenService;
             _unitOfWork = unitOfWork;
+            _jwtSettings = jwtSettigs.Value;
         }
 
         [HttpPost("registration")]
@@ -73,15 +79,32 @@ namespace FormCraft.API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult> Login([FromForm] LoginRequest loginDTO)
         {
-            var user = await _userRepository.FindByEmail(loginDTO.Email);
+            var user = await _userRepository.FindByEmailAsync(loginDTO.Email);
             if (user == null) return Unauthorized();
+
+            var refreshToken = string.IsNullOrEmpty(user.RefreshToken) || IsRefreshTokenExpired(user)
+                ? _tokenService.GenerateRefreshToken()
+                : user.RefreshToken;
+                
+            if (user.RefreshToken != refreshToken)
+            {
+                user.ChangeRefreshToken(refreshToken);
+                await _unitOfWork.CommitAsync();
+            }
 
             if (user.Verify(loginDTO.Password))
             {
                 var accessToken = _tokenService.GenerateAccessToken(user);
-                return Ok(new AuthResponse(accessToken, user.RefreshToken));
+                return Ok(new AuthResponse(accessToken, refreshToken));
             }
             return Unauthorized("Wrong password");
+        }
+
+        private bool IsRefreshTokenExpired(User user)
+        {
+            var expirationDate = user.RefreshTokenLastUpdated.AddDays(_jwtSettings.ExpireTime);
+            var result = expirationDate < DateTime.UtcNow;
+            return result;
         }
     }
 }

@@ -65,7 +65,8 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                     email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     password_hash = table.Column<string>(type: "text", nullable: false),
                     role = table.Column<string>(type: "text", nullable: false),
-                    refresh_token = table.Column<string>(type: "text", nullable: false)
+                    refresh_token = table.Column<string>(type: "text", nullable: false),
+                    refresh_token_last_updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {

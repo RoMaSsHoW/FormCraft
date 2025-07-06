@@ -23,8 +23,8 @@ namespace FormCraft.Application.Services
 
         public Guid? GetUserId()
         {
-            //if (!IsAuthenticated())
-            //    return Guid.Empty;
+            if (!IsAuthenticated())
+                return Guid.Empty;
 
             var userIdClaim = _accessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrWhiteSpace(userIdClaim))

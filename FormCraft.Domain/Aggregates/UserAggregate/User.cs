@@ -31,6 +31,7 @@ namespace FormCraft.Domain.Aggregates.UserAggregate
             Password = Password.Create(password);
             Role = Role.FromName<Role>(role);
             RefreshToken = refreshToken;
+            RefreshTokenLastUpdated = DateTime.UtcNow;
         }
 
         public string Name { get; private set; }
@@ -38,6 +39,7 @@ namespace FormCraft.Domain.Aggregates.UserAggregate
         public Password Password { get; private set; }
         public Role Role { get; private set; }
         public string RefreshToken { get; private set; }
+        public DateTime RefreshTokenLastUpdated { get; private set; }
 
         public static User Registr(
             string name,
@@ -52,6 +54,15 @@ namespace FormCraft.Domain.Aggregates.UserAggregate
         public bool Verify(string password)
         {
             return BCrypt.Net.BCrypt.Verify(password, Password.PasswordHash);
+        }
+
+        public void ChangeRefreshToken(string refreshToken)
+        {
+            if (string.IsNullOrWhiteSpace(refreshToken))
+                throw new ArgumentNullException("RefreshToken cannot be null or whitespace.");
+
+            RefreshToken = refreshToken;
+            RefreshTokenLastUpdated = DateTime.UtcNow;
         }
     }
 }

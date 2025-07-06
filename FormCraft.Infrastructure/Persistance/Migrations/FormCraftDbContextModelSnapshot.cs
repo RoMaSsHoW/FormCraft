@@ -233,6 +233,10 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                         .HasColumnType("text")
                         .HasColumnName("refresh_token");
 
+                    b.Property<DateTime>("RefreshTokenLastUpdated")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("refresh_token_last_updated");
+
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("text")
