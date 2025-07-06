@@ -14,7 +14,6 @@ namespace FormCraft.Application.Commands
         private readonly IQuestionRepository _questionRepository;
         private readonly ITagRepository _tagRepository;
         private readonly ITopicExistenceChecker _topicExisteceChecker;
-        private readonly IUserRoleChecker _userRoleChecker;
         private readonly ICurrentUserService _currentUserService;
         private readonly IUnitOfWork _unitOfWork;
 
@@ -23,7 +22,6 @@ namespace FormCraft.Application.Commands
             IQuestionRepository questionRepository,
             ITagRepository tagRepository,
             ITopicExistenceChecker topicExisteceChecker,
-            IUserRoleChecker userRoleChecker,
             ICurrentUserService currentUserService,
             IUnitOfWork unitOfWork)
         {
@@ -31,7 +29,6 @@ namespace FormCraft.Application.Commands
             _questionRepository = questionRepository;
             _tagRepository = tagRepository;
             _topicExisteceChecker = topicExisteceChecker;
-            _userRoleChecker = userRoleChecker;
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
         }
@@ -65,7 +62,7 @@ namespace FormCraft.Application.Commands
                 if (existenseTag == null)
                 {
                     existenseTag = new Tag(tagName);
-                    await _tagRepository.AddAsync(existenseTag);
+                    await _tagRepository.CreateAsync(existenseTag);
                     await _unitOfWork.CommitAsync();
                 }
                 if (existenseTag != null)

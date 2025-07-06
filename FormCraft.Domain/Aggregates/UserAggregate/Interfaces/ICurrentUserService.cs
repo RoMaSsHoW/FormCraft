@@ -10,5 +10,6 @@ namespace FormCraft.Domain.Aggregates.UserAggregate.Interfaces
     {
         Guid? GetUserId();
         string? GetRole();
+        bool IsAuthenticated();
     }
 }

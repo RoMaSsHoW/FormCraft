@@ -11,9 +11,6 @@ namespace FormCraft.Infrastructure.Persistance.Configuration
             builder.ToTable("tag");
             builder.HasKey(t => t.Id);
 
-            builder.Property(t => t.Id)
-                .HasColumnName("Id")
-                .UseIdentityAlwaysColumn();
             builder.Property(t => t.Name)
                 .HasColumnName("name")
                 .HasMaxLength(255)
@@ -23,7 +20,7 @@ namespace FormCraft.Infrastructure.Persistance.Configuration
 
             builder.HasMany<FormTag>()
                 .WithOne()
-                .HasForeignKey(t => t.Id)
+                .HasForeignKey(t => t.TagId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

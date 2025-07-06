@@ -34,7 +34,7 @@ namespace FormCraft.Application.Services
             return Guid.TryParse(userIdClaim, out var userId) ? userId : Guid.Empty;
         }
 
-        private bool IsAuthenticated()
+        public bool IsAuthenticated()
         {
             return _accessor.HttpContext?.User?.Identity?.IsAuthenticated == true;
         }

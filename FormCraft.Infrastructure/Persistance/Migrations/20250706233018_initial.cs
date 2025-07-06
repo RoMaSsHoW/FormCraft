@@ -34,8 +34,7 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                 name: "tag",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false)
                 },
                 constraints: table =>
@@ -102,7 +101,7 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     form_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    tag_id = table.Column<int>(type: "integer", nullable: false)
+                    tag_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -111,12 +110,6 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                         name: "FK_form_tag_form_form_id",
                         column: x => x.form_id,
                         principalTable: "form",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_form_tag_tag_Id",
-                        column: x => x.Id,
-                        principalTable: "tag",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(

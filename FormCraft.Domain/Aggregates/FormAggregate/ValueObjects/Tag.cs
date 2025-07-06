@@ -18,7 +18,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate.ValueObjects
             Name = name;
         }
 
-        public int Id { get; }
+        public Guid Id { get; } = Guid.NewGuid();
         public string Name { get; }
 
         protected override IEnumerable<object?> GetEqualityComponents()

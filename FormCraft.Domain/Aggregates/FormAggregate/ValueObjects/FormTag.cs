@@ -5,12 +5,12 @@ namespace FormCraft.Domain.Aggregates.FormAggregate.ValueObjects
     public class FormTag : ValueObject
     {
         public FormTag() { }
-        public FormTag(Guid formId, int tagId)
+        public FormTag(Guid formId, Guid tagId)
         {
             if (formId == Guid.Empty)
                 throw new ArgumentException("FormId cannot be empty");
 
-            if (tagId <= 0)
+            if (tagId == Guid.Empty)
                 throw new ArgumentException("TagId is invalid or empty");
 
             FormId = formId;
@@ -19,7 +19,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate.ValueObjects
 
         public int Id { get; }
         public Guid FormId { get; }
-        public int TagId { get; }
+        public Guid TagId { get; }
 
         protected override IEnumerable<object?> GetEqualityComponents()
         {

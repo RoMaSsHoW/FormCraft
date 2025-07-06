@@ -40,12 +40,11 @@ namespace FormCraft.API.Extentions
 
         private static void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<ITokenService, TokenService>(); 
+
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
-            services.AddScoped<IUserRoleChecker, UserRoleChecker>();
-
-            services.AddSingleton<ITopicExistenceChecker, TopicExistenceChecker>();
-            services.AddSingleton<ITokenService, TokenService>();
+            services.AddScoped<ITopicExistenceChecker, TopicExistenceChecker>();
 
             services.AddScoped<IFormRepository, FormRepository>();
             services.AddScoped<IQuestionRepository, QuestionRepository>();
@@ -103,6 +102,7 @@ namespace FormCraft.API.Extentions
             services.AddMediatR(mc =>
             {
                 mc.RegisterServicesFromAssemblies(
+                    typeof(CreateNewFormWithQuestionCommand).Assembly,
                     typeof(CreateNewTemplateCommand).Assembly,
                     typeof(GetAllTemplatesQuery).Assembly,
                     typeof(GetTemplateQuery).Assembly);

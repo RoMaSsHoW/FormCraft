@@ -45,7 +45,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             IsPublic = isPublic;
             CreationTime = DateTime.UtcNow;
 
-            if (tags.Count() > 0)
+            if (tags.Any())
                 foreach (var tag in tags)
                     AddTag(tag);
         }
@@ -104,9 +104,28 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             if (!UserIsAuthorOrAdmin())
                 throw new ArgumentException("User not author or admin");
 
-            if (_tags.Any(t => t.Id == tag.Id)) return;
+            if (_tags.Any(t => t.TagId == tag.Id)) return;
             var formTag = new FormTag(Id, tag.Id);
             _tags.Add(formTag);
+        }
+
+        public IEnumerable<Question> AddQuestion(string questionText, string questionType)
+        {
+            if (!UserIsAuthorOrAdmin())
+                throw new ArgumentException("User not author or admin");
+
+            if (_questions.Any(q => q.Text == questionText && q.Type == QuestionType.FromName<QuestionType>(questionType)))
+            {
+                return _questions;
+            }
+
+            var lastOrderNumber = _questions.Any() ? _questions.Max(q => q.OrderNumber) : 0;
+
+            var question = Question.Create(Id, AuthorId, questionText, questionType, lastOrderNumber + 1, _currentUserService);
+
+            _questions.Add(question);
+
+            return _questions;
         }
 
         public void ChangeTitle(string text)
@@ -170,25 +189,6 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
                 return;
 
             IsPublic = isPublic;
-        }
-
-        public IEnumerable<Question> AddQuestion(string questionText, string questionType)
-        {
-            if (!UserIsAuthorOrAdmin())
-                throw new ArgumentException("User not author or admin");
-
-            if (_questions.Any(q => q.Text == questionText && q.Type == QuestionType.FromName<QuestionType>(questionType)))
-            {
-                return _questions;
-            }
-
-            var lastOrderNumber = _questions.Any() ? _questions.Max(q => q.OrderNumber) : 0;
-
-            var question = Question.Create(Id, AuthorId, questionText, questionType, lastOrderNumber + 1, _currentUserService);
-
-            _questions.Add(question);
-
-            return _questions;
         }
 
         public void ChangeQuestionOrder(List<Guid> questionIds)

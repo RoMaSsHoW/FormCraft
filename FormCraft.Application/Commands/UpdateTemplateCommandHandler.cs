@@ -16,7 +16,6 @@ namespace FormCraft.Application.Commands
         private readonly IQuestionRepository _questionRepository;
         private readonly ITagRepository _tagRepository;
         private readonly ITopicExistenceChecker _topicExisteceChecker;
-        private readonly IUserRoleChecker _userRoleChecker;
         private readonly IUnitOfWork _unitOfWork;
 
         public UpdateTemplateCommandHandler(
@@ -24,14 +23,12 @@ namespace FormCraft.Application.Commands
             IQuestionRepository questionRepository,
             ITagRepository tagRepository,
             ITopicExistenceChecker topicExisteceChecker,
-            IUserRoleChecker userRoleChecker,
             IUnitOfWork unitOfWork)
         {
             _formRepository = formRepository;
             _questionRepository = questionRepository;
             _tagRepository = tagRepository;
             _topicExisteceChecker = topicExisteceChecker;
-            _userRoleChecker = userRoleChecker;
             _unitOfWork = unitOfWork;
         }
 

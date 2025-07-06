@@ -1,12 +1,6 @@
-﻿using FormCraft.Domain.Aggregates.FormAggregate;
-using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
+﻿using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FormCraft.Infrastructure.Persistance.Repositories
 {
@@ -19,7 +13,7 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<Tag> FindByIdAsync(int id)
+        public async Task<Tag> FindByIdAsync(Guid id)
         {
             var tag = await _dbContext.Tags
                  .FirstOrDefaultAsync(t => t.Id == id);
@@ -30,14 +24,19 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
         public async Task<Tag> FindByNameAsync(string name)
         {
             var tag = await _dbContext.Tags
-                .FirstOrDefaultAsync (t => t.Name == name);
+                .FirstOrDefaultAsync(t => t.Name == name);
 
             return tag;
         }
 
-        public async Task AddAsync(Tag tag)
+        public async Task CreateAsync(Tag tag)
         {
             await _dbContext.Tags.AddAsync(tag);
+        }
+
+        public async Task CreateAsync(IEnumerable<Tag> tags)
+        {
+            await _dbContext.Tags.AddRangeAsync(tags);
         }
     }
 }

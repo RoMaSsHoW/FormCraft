@@ -35,10 +35,10 @@ namespace FormCraft.API.Controllers
             [FromQuery] string description,
             [FromQuery] string topic,
             [FromQuery] IEnumerable<string> tags,
-            [FromBody] IEnumerable<QuestionDTO> questions,
-            [FromQuery] bool isPublic)
+            [FromQuery] bool isPublic,
+            [FromBody] IEnumerable<QuestionDTO> questions)
         {
-            var command = new CreateNewTemplateCommand(title, description, topic, tags, questions, isPublic);
+            var command = new CreateNewFormWithQuestionCommand(title, description, topic, tags, isPublic, questions);
             await Mediator.Send(command);
             return Ok();
         }

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FormCraft.Infrastructure.Persistance.Migrations
 {
     [DbContext(typeof(FormCraftDbContext))]
-    [Migration("20250706180140_initial")]
+    [Migration("20250706233018_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -164,8 +164,8 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("form_id");
 
-                    b.Property<int>("TagId")
-                        .HasColumnType("integer")
+                    b.Property<Guid>("TagId")
+                        .HasColumnType("uuid")
                         .HasColumnName("tag_id");
 
                     b.HasKey("Id");
@@ -179,12 +179,9 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
 
             modelBuilder.Entity("FormCraft.Domain.Aggregates.FormAggregate.ValueObjects.Tag", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("Id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -316,12 +313,6 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                     b.HasOne("FormCraft.Domain.Aggregates.FormAggregate.Form", null)
                         .WithMany("Tags")
                         .HasForeignKey("FormId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FormCraft.Domain.Aggregates.FormAggregate.ValueObjects.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

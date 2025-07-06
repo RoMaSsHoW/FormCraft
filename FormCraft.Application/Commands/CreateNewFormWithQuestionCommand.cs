@@ -5,5 +5,10 @@ using FormCraft.Application.Models.RequestModels;
 namespace FormCraft.Application.Commands
 {
     public record CreateNewFormWithQuestionCommand(
-        NewTemplateRequest newTemplateRequest) : ICommand;
+        string Title,
+        string Description,
+        string Topic,
+        IEnumerable<string> Tags,
+        bool IsPublic,
+        IEnumerable<QuestionDTO> Questions) : ICommand;
 }
