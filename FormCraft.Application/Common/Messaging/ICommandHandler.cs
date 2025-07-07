@@ -6,4 +6,9 @@ namespace FormCraft.Application.Common.Messaging
         where TCommand : ICommand
     {
     }
+
+    public interface ICommandHandler<TCommand, TResult> : IRequestHandler<TCommand, TResult>
+        where TCommand : ICommand<TResult>
+    {
+    }
 }

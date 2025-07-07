@@ -3,6 +3,8 @@ using FormCraft.Application.Common.Messaging;
 using FormCraft.Application.Models.ViewModels;
 using FormCraft.Domain.Aggregates.FormAggregate;
 using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
+using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
+using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
 using System.Data;
 
 namespace FormCraft.Application.Queries
@@ -10,14 +12,19 @@ namespace FormCraft.Application.Queries
     public class GetAllTemplatesQueryHandler : IQueryHandler<GetAllTemplatesQuery, IEnumerable<TemplateView>>
     {
         private readonly IDbConnection _dbCconnection;
-        public GetAllTemplatesQueryHandler(IDbConnection dbCconnection)
+        private readonly ICurrentUserService _currentUserService;
+
+        public GetAllTemplatesQueryHandler(
+            IDbConnection dbCconnection,
+            ICurrentUserService currentUserService)
         {
             _dbCconnection = dbCconnection;
+            _currentUserService = currentUserService;
         }
 
         public async Task<IEnumerable<TemplateView>> Handle(GetAllTemplatesQuery request, CancellationToken cancellationToken)
         {
-            const string sql = @"
+            var sql = @"
                 SELECT
                     f.""Id"" AS Id,
                     f.author_id AS AuthorId,
@@ -36,7 +43,46 @@ namespace FormCraft.Application.Queries
                 LEFT JOIN form_tag ft ON f.""Id"" = ft.form_id
                 LEFT JOIN tag t ON ft.tag_id = t.""Id""
                 INNER JOIN  question q ON f.""Id"" = q.form_id
-                order by f.""Id"", q.order_number;";
+                WHERE 1 = 1";
+
+            var parameters = new DynamicParameters();
+
+            if (!string.IsNullOrWhiteSpace(request.TagName))
+            {
+                sql += " AND t.name ILIKE @TagName";
+                parameters.Add("TagName", $"%{request.TagName}%");
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.TopicName))
+            {
+                sql += " AND f.topic_name ILIKE @TopicName";
+                parameters.Add("TopicName", $"%{request.TopicName}%");
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.TitleSearch))
+            {
+                sql += " AND f.title ILIKE @TitleSearch";
+                parameters.Add("TitleSearch", $"%{request.TitleSearch}%");
+            }
+
+            if (_currentUserService.IsAuthenticated())
+            {
+                var userId = _currentUserService.GetUserId();
+                var userRole = _currentUserService.GetRole();
+                var isAdmin = Role.FromName<Role>(userRole) == Role.Admin;
+
+                if (!isAdmin)
+                {
+                    sql += " AND (f.is_public = true OR f.author_id = @UserId)";
+                    parameters.Add("UserId", userId);
+                }
+            }
+            else
+            {
+                sql += " AND f.is_public = true";
+            }
+
+            sql += @" ORDER BY f.""Id"", q.order_number;";
 
             var formDic = new Dictionary<Guid, TemplateView>();
 
@@ -77,6 +123,7 @@ namespace FormCraft.Application.Queries
                     }
                     return formView;
                 },
+                parameters,
                 splitOn: "Name,Id");
 
             return formDic.Values;

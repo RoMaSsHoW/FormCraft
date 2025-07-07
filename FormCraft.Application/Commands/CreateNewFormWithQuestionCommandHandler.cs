@@ -46,6 +46,7 @@ namespace FormCraft.Application.Commands
         {
             if (!_currentUserService.IsAuthenticated())
                 throw new UnauthorizedAccessException("User unauthorized");
+
             if (!_topicExisteceChecker.IsExist(request.Topic))
                 throw new ArgumentException("Topic name not exist");
 
@@ -58,23 +59,14 @@ namespace FormCraft.Application.Commands
             var allTags = new List<Tag>();
             var newTags = new List<Tag>();
 
-            var validTagNames = tagNames.Where(t => !string.IsNullOrWhiteSpace(t)).ToList();
-
-            if (!validTagNames.Any())
-                return allTags;
-
-            foreach (var tagName in validTagNames)
+            foreach (var tagName in tagNames)
             {
                 var existenseTag = await _tagRepository.FindByNameAsync(tagName);
 
                 if (existenseTag != null)
-                {
                     allTags.Add(existenseTag);
-                }
                 else
-                {
                     newTags.Add(new Tag(tagName));
-                }
             }
 
             if (newTags.Any())
@@ -108,12 +100,15 @@ namespace FormCraft.Application.Commands
 
             foreach (var question in questions)
             {
-                newQuestions = (List<Question>)form.AddQuestion(
-                    question.Text,
-                    question.Type,
-                    _currentUserService);
+                if (form.Questions.Any(q => q.Text == question.Text
+                    && q.Type == QuestionType.FromName<QuestionType>(question.Type)))
+                    continue;
 
+                var lastOrderNumber = form.Questions.Any() ? form.Questions.Max(q => q.OrderNumber) : 0;
+
+                newQuestions.Add(Question.Create(form.Id, form.AuthorId, question.Text, question.Type, lastOrderNumber + 1));
             }
+
             if (newQuestions.Any())
             {
                 await _questionRepository.CreateAsync(newQuestions);

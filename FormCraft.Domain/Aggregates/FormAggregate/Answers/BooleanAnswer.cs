@@ -38,19 +38,6 @@ namespace FormCraft.Domain.Aggregates.FormAggregate.Answers
                 value);
         }
 
-        private bool UserIsAuthorOrAdmin(ICurrentUserService currentUserService)
-        {
-            var userId = currentUserService.GetUserId();
-            var userRole = currentUserService.GetRole();
-
-            if (userId != Guid.Empty && !string.IsNullOrEmpty(userRole))
-            {
-                return userId == AuthorId || Role.FromName<Role>(userRole) == Role.Admin;
-            }
-
-            throw new UnauthorizedAccessException("User unauthorized");
-        }
-
         public void ChangeValue(bool value, ICurrentUserService currentUserService)
         {
             if (!UserIsAuthorOrAdmin(currentUserService))

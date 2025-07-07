@@ -46,19 +46,6 @@ namespace FormCraft.Domain.Aggregates.FormAggregate.Answers
                 value);
         }
 
-        private bool UserIsAuthorOrAdmin(ICurrentUserService currentUserService)
-        {
-            var userId = currentUserService.GetUserId();
-            var userRole = currentUserService.GetRole();
-
-            if (userId != Guid.Empty && !string.IsNullOrEmpty(userRole))
-            {
-                return userId == AuthorId || Role.FromName<Role>(userRole) == Role.Admin;
-            }
-
-            throw new UnauthorizedAccessException("User unauthorized");
-        }
-
         public void ChangeValue(string value, ICurrentUserService currentUserService)
         {
             const int MaxAnswerLength = 255;

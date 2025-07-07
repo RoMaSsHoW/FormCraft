@@ -105,25 +105,6 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             AddTag(tag);
         }
 
-        public IEnumerable<Question> AddQuestion(string questionText, string questionType, ICurrentUserService currentUserService)
-        {
-            if (!UserIsAuthorOrAdmin(currentUserService))
-                throw new ArgumentException("User not author or admin");
-
-            if (_questions.Any(q => q.Text == questionText && q.Type == QuestionType.FromName<QuestionType>(questionType)))
-            {
-                return _questions;
-            }
-
-            var lastOrderNumber = _questions.Any() ? _questions.Max(q => q.OrderNumber) : 0;
-
-            var question = Question.Create(Id, AuthorId, questionText, questionType, lastOrderNumber + 1);
-
-            _questions.Add(question);
-
-            return _questions;
-        }
-
         public void ChangeTitle(string text, ICurrentUserService currentUserService)
         {
             const int MaxTitleLength = 255;

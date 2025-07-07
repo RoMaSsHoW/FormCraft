@@ -4,6 +4,7 @@
     {
         Task<Form> FindByIdAsync(Guid id);
         Task AddAsync(Form form);
-        Task RemoveAsync(IEnumerable<Guid> ids);
+        void RemoveAsync(IEnumerable<Form> forms);
+        Task<IEnumerable<Form>> FindFormsByIdAsync(IEnumerable<Guid> ids);
     }
 }

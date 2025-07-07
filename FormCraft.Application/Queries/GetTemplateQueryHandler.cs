@@ -3,6 +3,7 @@ using FormCraft.Application.Common.Messaging;
 using FormCraft.Application.Models.ViewModels;
 using FormCraft.Domain.Aggregates.FormAggregate;
 using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
+using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using System.Data;
 
 namespace FormCraft.Application.Queries
@@ -10,14 +11,21 @@ namespace FormCraft.Application.Queries
     public class GetTemplateQueryHandler : IQueryHandler<GetTemplateQuery, TemplateView>
     {
         private readonly IDbConnection _dbCconnection;
+        private readonly ICurrentUserService _currentUserService;
 
-        public GetTemplateQueryHandler(IDbConnection dbCconnection)
+        public GetTemplateQueryHandler(
+            IDbConnection dbCconnection,
+            ICurrentUserService currentUserService)
         {
             _dbCconnection = dbCconnection;
+            _currentUserService = currentUserService;
         }
 
         public async Task<TemplateView> Handle(GetTemplateQuery request, CancellationToken cancellationToken)
         {
+            if (!_currentUserService.IsAuthenticated())
+                throw new UnauthorizedAccessException("User unauthorized");
+
             const string sql = @"
                 SELECT
                     f.""Id"" AS Id,
@@ -42,7 +50,7 @@ namespace FormCraft.Application.Queries
             var formDic = new Dictionary<Guid, TemplateView>();
             var parameters = new
             {
-                TemplateId = request.templateId
+                TemplateId = request.TemplateId
             };
 
             var result = await _dbCconnection.QueryAsync<Form, Tag, QuestionView, TemplateView>(
