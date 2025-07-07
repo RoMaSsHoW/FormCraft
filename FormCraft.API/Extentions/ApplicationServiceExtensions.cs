@@ -103,7 +103,7 @@ namespace FormCraft.API.Extentions
             {
                 mc.RegisterServicesFromAssemblies(
                     typeof(CreateNewFormWithQuestionCommand).Assembly,
-                    typeof(CreateNewTemplateCommand).Assembly,
+                    typeof(UpdateFormWithQuestionCommand).Assembly,
                     typeof(GetAllTemplatesQuery).Assembly,
                     typeof(GetTemplateQuery).Assembly);
             });

@@ -34,7 +34,7 @@ namespace FormCraft.Application.Queries
                     q.order_number AS OrderNumber
                 FROM form f
                 LEFT JOIN form_tag ft ON f.""Id"" = ft.form_id
-                LEFT JOIN tag t ON ft.tag_id = t.Id
+                LEFT JOIN tag t ON ft.tag_id = t.""Id""
                 INNER JOIN  question q ON f.""Id"" = q.form_id
                 order by f.""Id"", q.order_number;";
 

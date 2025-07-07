@@ -8,23 +8,23 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
 {
     public class Form : Entity
     {
-        private readonly ICurrentUserService _currentUserService;
         private readonly List<FormTag> _tags = new List<FormTag>();
         private readonly List<Question> _questions = new List<Question>();
 
         public Form() { }
 
         private Form(
+            Guid userId,
             string title,
             string description,
             string topic,
             IEnumerable<Tag> tags,
-            bool isPublic,
-            ICurrentUserService currentUserService)
+            bool isPublic)
         {
-            _currentUserService = currentUserService;
-
             const int MaxTextLength = 255;
+
+            if (userId == Guid.Empty)
+                throw new UnauthorizedAccessException("User unauthorized");
 
             if (string.IsNullOrWhiteSpace(title))
                 throw new ArgumentException("Title cannot be null or whitespace.");
@@ -38,7 +38,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             if (description.Length > MaxTextLength)
                 throw new ArgumentException("Invalid description text length");
 
-            SetAuthorId();
+            AuthorId = userId;
             Title = title;
             Description = description;
             TopicName = topic;
@@ -61,35 +61,26 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
         public DateTime CreationTime { get; private set; }
 
         public static Form Create(
+            Guid userId,
             string title,
             string description,
             string topic,
             IEnumerable<Tag> tags,
-            bool isPublic,
-            ICurrentUserService currentUserService)
+            bool isPublic)
         {
             return new Form(
+                userId,
                 title,
                 description,
                 topic,
                 tags,
-                isPublic,
-                currentUserService);
+                isPublic);
         }
 
-        private void SetAuthorId()
+        private bool UserIsAuthorOrAdmin(ICurrentUserService currentUserService)
         {
-            var authorId = _currentUserService.GetUserId();
-            if (authorId == Guid.Empty)
-                throw new UnauthorizedAccessException("User unauthorized");
-
-            AuthorId = (Guid)authorId!;
-        }
-
-        private bool UserIsAuthorOrAdmin()
-        {
-            var userId = _currentUserService.GetUserId();
-            var userRole = _currentUserService.GetRole();
+            var userId = currentUserService.GetUserId();
+            var userRole = currentUserService.GetRole();
 
             if (userId != Guid.Empty && !string.IsNullOrEmpty(userRole))
             {
@@ -99,19 +90,24 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             throw new UnauthorizedAccessException("User unauthorized");
         }
 
-        public void AddTag(Tag tag)
+        private void AddTag(Tag tag)
         {
-            if (!UserIsAuthorOrAdmin())
-                throw new ArgumentException("User not author or admin");
-
             if (_tags.Any(t => t.TagId == tag.Id)) return;
             var formTag = new FormTag(Id, tag.Id);
             _tags.Add(formTag);
         }
 
-        public IEnumerable<Question> AddQuestion(string questionText, string questionType)
+        public void AddTag(Tag tag, ICurrentUserService currentUserService)
         {
-            if (!UserIsAuthorOrAdmin())
+            if (!UserIsAuthorOrAdmin(currentUserService))
+                throw new ArgumentException("User not author or admin");
+
+            AddTag(tag);
+        }
+
+        public IEnumerable<Question> AddQuestion(string questionText, string questionType, ICurrentUserService currentUserService)
+        {
+            if (!UserIsAuthorOrAdmin(currentUserService))
                 throw new ArgumentException("User not author or admin");
 
             if (_questions.Any(q => q.Text == questionText && q.Type == QuestionType.FromName<QuestionType>(questionType)))
@@ -121,18 +117,18 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
 
             var lastOrderNumber = _questions.Any() ? _questions.Max(q => q.OrderNumber) : 0;
 
-            var question = Question.Create(Id, AuthorId, questionText, questionType, lastOrderNumber + 1, _currentUserService);
+            var question = Question.Create(Id, AuthorId, questionText, questionType, lastOrderNumber + 1);
 
             _questions.Add(question);
 
             return _questions;
         }
 
-        public void ChangeTitle(string text)
+        public void ChangeTitle(string text, ICurrentUserService currentUserService)
         {
             const int MaxTitleLength = 255;
 
-            if (!UserIsAuthorOrAdmin())
+            if (!UserIsAuthorOrAdmin(currentUserService))
                 throw new ArgumentException("User not author or admin");
 
             if (string.IsNullOrWhiteSpace(text))
@@ -147,11 +143,11 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             Title = text;
         }
 
-        public void ChangeDescription(string text)
+        public void ChangeDescription(string text, ICurrentUserService currentUserService)
         {
             const int MaxDescriptionLength = 255;
 
-            if (!UserIsAuthorOrAdmin())
+            if (!UserIsAuthorOrAdmin(currentUserService))
                 throw new ArgumentException("User not author or admin");
 
             if (string.IsNullOrWhiteSpace(text))
@@ -166,9 +162,9 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             Description = text;
         }
 
-        public void ChangeTopic(string topic, ITopicExistenceChecker topicExisteceChecker)
+        public void ChangeTopic(string topic, ITopicExistenceChecker topicExisteceChecker, ICurrentUserService currentUserService)
         {
-            if (!UserIsAuthorOrAdmin())
+            if (!UserIsAuthorOrAdmin(currentUserService))
                 throw new ArgumentException("User not author or admin");
 
             if (!topicExisteceChecker.IsExist(topic))
@@ -180,32 +176,15 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             TopicName = topic;
         }
 
-        public void ChangeVisibility(bool isPublic)
+        public void ChangeVisibility(bool isPublic, ICurrentUserService currentUserService)
         {
-            if (!UserIsAuthorOrAdmin())
+            if (!UserIsAuthorOrAdmin(currentUserService))
                 throw new ArgumentException("User not author or admin");
 
             if (isPublic == IsPublic)
                 return;
 
             IsPublic = isPublic;
-        }
-
-        public void ChangeQuestionOrder(List<Guid> questionIds)
-        {
-            if (!UserIsAuthorOrAdmin())
-                throw new ArgumentException("User not author or admin");
-
-            if (questionIds == null || questionIds.Count == 0)
-                throw new ArgumentException("Question list cannot be null or empty", nameof(questionIds));
-
-            for (int i = 0; i <= questionIds.Count; i++)
-            {
-                var question = _questions.FirstOrDefault(q => q.Id == questionIds[i]);
-                if (question == null)
-                    throw new InvalidOperationException($"Question with ID {questionIds[i]} not found.");
-                question.ChangeOrderNumber(i + 1);
-            }
         }
     }
 }

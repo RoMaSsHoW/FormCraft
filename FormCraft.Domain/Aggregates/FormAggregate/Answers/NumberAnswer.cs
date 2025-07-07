@@ -6,16 +6,15 @@ namespace FormCraft.Domain.Aggregates.FormAggregate.Answers
 {
     public class NumberAnswer : Answer
     {
-        private readonly ICurrentUserService _currentUserService;
-
         public NumberAnswer() { }
 
         private NumberAnswer(
+            Guid userId,
             Guid questionId,
-            int value,
-            ICurrentUserService currentUserService)
+            int value)
         {
-            _currentUserService = currentUserService;
+            if (userId == Guid.Empty)
+                throw new UnauthorizedAccessException("User unauthorized");
 
             if (questionId == Guid.Empty)
                 throw new ArgumentException("Question cannot be empty");
@@ -23,7 +22,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate.Answers
             if (value <= 0)
                 throw new ArgumentException("Answer cannot be zero or negative");
 
-            SetAuthorId();
+            AuthorId = userId;
             QuestionId = questionId;
             Value = value;
         }
@@ -32,29 +31,20 @@ namespace FormCraft.Domain.Aggregates.FormAggregate.Answers
         public override QuestionType Type => QuestionType.Number;
 
         public static NumberAnswer Create(
+            Guid userId,
             Guid questionId,
-            int value,
-            ICurrentUserService currentUserService)
+            int value)
         {
             return new NumberAnswer(
+                userId,
                 questionId,
-                value,
-                currentUserService);
+                value);
         }
 
-        private void SetAuthorId()
+        private bool UserIsAuthorOrAdmin(ICurrentUserService currentUserService)
         {
-            var authorId = _currentUserService.GetUserId();
-            if (authorId == Guid.Empty)
-                throw new UnauthorizedAccessException("User unauthorized");
-
-            AuthorId = (Guid)authorId!;
-        }
-
-        private bool UserIsAuthorOrAdmin()
-        {
-            var userId = _currentUserService.GetUserId();
-            var userRole = _currentUserService.GetRole();
+            var userId = currentUserService.GetUserId();
+            var userRole = currentUserService.GetRole();
 
             if (userId != Guid.Empty && !string.IsNullOrEmpty(userRole))
             {
@@ -64,9 +54,9 @@ namespace FormCraft.Domain.Aggregates.FormAggregate.Answers
             throw new UnauthorizedAccessException("User unauthorized");
         }
 
-        public void ChangeValue(int value)
+        public void ChangeValue(int value, ICurrentUserService currentUserService)
         {
-            if (!UserIsAuthorOrAdmin())
+            if (!UserIsAuthorOrAdmin(currentUserService))
                 throw new ArgumentException("User not author or admin");
 
             if (value <= 0)

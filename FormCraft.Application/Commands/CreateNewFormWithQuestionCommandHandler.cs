@@ -88,13 +88,15 @@ namespace FormCraft.Application.Commands
 
         private async Task<Form> CreateFormAsync(CreateNewFormWithQuestionCommand request, List<Tag> tags)
         {
+            var userId = _currentUserService.GetUserId();
+
             var form = Form.Create(
+                (Guid)userId!,
                 request.Title,
                 request.Description,
                 request.Topic,
                 tags,
-                request.IsPublic,
-                _currentUserService);
+                request.IsPublic);
 
             await _formRepository.AddAsync(form);
             return form;
@@ -108,7 +110,8 @@ namespace FormCraft.Application.Commands
             {
                 newQuestions = (List<Question>)form.AddQuestion(
                     question.Text,
-                    question.Type);
+                    question.Type,
+                    _currentUserService);
 
             }
             if (newQuestions.Any())

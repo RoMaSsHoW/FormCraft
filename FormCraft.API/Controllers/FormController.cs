@@ -4,6 +4,7 @@ using FormCraft.Application.Models.ViewModels;
 using FormCraft.Application.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Formats.Asn1;
 
 namespace FormCraft.API.Controllers
 {
@@ -39,6 +40,14 @@ namespace FormCraft.API.Controllers
             [FromBody] IEnumerable<QuestionDTO> questions)
         {
             var command = new CreateNewFormWithQuestionCommand(title, description, topic, tags, isPublic, questions);
+            await Mediator.Send(command);
+            return Ok();
+        }
+
+        [HttpPost("updateTemplate")]
+        public async Task<IActionResult> UpdateTemplate([FromBody] TemplateView newTemplateInformation)
+        {
+            var command = new UpdateFormWithQuestionCommand(newTemplateInformation);
             await Mediator.Send(command);
             return Ok();
         }

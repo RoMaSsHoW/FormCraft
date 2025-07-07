@@ -2,9 +2,9 @@
 {
     public class QuestionView
     {
-        public Guid Id { get; set; }
-        public string Text { get; set; }
-        public string Type { get; set; }
-        public int OrderNumber { get; set; }
+        public Guid? Id { get; set; } = Guid.Empty;
+        public string Text { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public int? OrderNumber { get; set; }
     }
 }

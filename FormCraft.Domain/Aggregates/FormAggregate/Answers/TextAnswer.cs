@@ -6,17 +6,17 @@ namespace FormCraft.Domain.Aggregates.FormAggregate.Answers
 {
     public class TextAnswer : Answer
     {
-        private readonly ICurrentUserService _currentUserService;
         public TextAnswer() { }
 
         private TextAnswer(
+            Guid userId,
             Guid questionId,
-            string value,
-            ICurrentUserService currentUserService)
+            string value)
         {
-            _currentUserService = currentUserService;
-
             const int MaxAnswerLength = 255;
+
+            if (userId == Guid.Empty)
+                throw new UnauthorizedAccessException("User unauthorized");
 
             if (questionId == Guid.Empty)
                 throw new ArgumentException("Question cannot be empty");
@@ -27,7 +27,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate.Answers
             if (value.Length > MaxAnswerLength)
                 throw new ArgumentException("Invalid answer text length");
 
-            SetAuthorId();
+            AuthorId = userId;
             QuestionId = questionId;
             Value = value;
         }
@@ -36,29 +36,20 @@ namespace FormCraft.Domain.Aggregates.FormAggregate.Answers
         public override QuestionType Type => QuestionType.Text;
 
         public static TextAnswer Create(
+            Guid userId,
             Guid questionId,
-            string value,
-            ICurrentUserService currentUserService)
+            string value)
         {
             return new TextAnswer(
+                userId,
                 questionId,
-                value,
-                currentUserService);
+                value);
         }
 
-        private void SetAuthorId()
+        private bool UserIsAuthorOrAdmin(ICurrentUserService currentUserService)
         {
-            var authorId = _currentUserService.GetUserId();
-            if (authorId == Guid.Empty)
-                throw new UnauthorizedAccessException("User unauthorized");
-
-            AuthorId = (Guid)authorId!;
-        }
-
-        private bool UserIsAuthorOrAdmin()
-        {
-            var userId = _currentUserService.GetUserId();
-            var userRole = _currentUserService.GetRole();
+            var userId = currentUserService.GetUserId();
+            var userRole = currentUserService.GetRole();
 
             if (userId != Guid.Empty && !string.IsNullOrEmpty(userRole))
             {
@@ -68,11 +59,11 @@ namespace FormCraft.Domain.Aggregates.FormAggregate.Answers
             throw new UnauthorizedAccessException("User unauthorized");
         }
 
-        public void ChangeValue(string value)
+        public void ChangeValue(string value, ICurrentUserService currentUserService)
         {
             const int MaxAnswerLength = 255;
 
-            if (!UserIsAuthorOrAdmin())
+            if (!UserIsAuthorOrAdmin(currentUserService))
                 throw new ArgumentException("User not author or admin");
 
             if (string.IsNullOrWhiteSpace(value))
