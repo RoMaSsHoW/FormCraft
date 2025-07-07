@@ -4,6 +4,6 @@ namespace FormCraft.Domain.Aggregates.FormAggregate.Interfaces
 {
     public interface ITopicRepository
     {
-        Task<Topic> FindByNameAsync(string name);
+        Topic FindByName(string name);
     }
 }

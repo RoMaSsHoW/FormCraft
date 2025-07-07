@@ -18,10 +18,10 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<Topic> FindByNameAsync(string name)
+        public Topic FindByName(string name)
         {
-            var topic = await _dbContext.Topics
-                .FirstOrDefaultAsync(t => t.Name == name);
+            var topic = _dbContext.Topics
+                .FirstOrDefault(t => t.Name == name);
 
             return topic;
         }
