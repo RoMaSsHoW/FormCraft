@@ -13,6 +13,9 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["FormCraft.API/FormCraft.API.csproj", "FormCraft.API/"]
+COPY ["FormCraft.Application/FormCraft.Application.csproj", "FormCraft.Application/"]
+COPY ["FormCraft.Domain/FormCraft.Domain.csproj", "FormCraft.Domain/"]
+COPY ["FormCraft.Infrastructure/FormCraft.Infrastructure.csproj", "FormCraft.Infrastructure/"]
 RUN dotnet restore "./FormCraft.API/FormCraft.API.csproj"
 COPY . .
 WORKDIR "/src/FormCraft.API"
