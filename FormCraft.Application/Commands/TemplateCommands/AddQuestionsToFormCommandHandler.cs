@@ -56,7 +56,7 @@ namespace FormCraft.Application.Commands.Template
         private (Guid UserId, Role UserRole) GetUserDetails()
         {
             var userId = _currentUserService.GetUserId()!;
-            var userRole = Domain.Common.Enumeration.FromName<Role>(_currentUserService.GetRole()!);
+            var userRole = Role.FromName<Role>(_currentUserService.GetRole()!);
 
             return ((Guid)userId, userRole);
         }

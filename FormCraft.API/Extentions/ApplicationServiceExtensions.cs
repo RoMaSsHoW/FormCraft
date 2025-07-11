@@ -1,4 +1,5 @@
-﻿using FormCraft.Application.Commands.Template;
+﻿using FormCraft.Application.Commands.FormCommands;
+using FormCraft.Application.Commands.Template;
 using FormCraft.Application.Common.Persistance;
 using FormCraft.Application.Intefaces;
 using FormCraft.Application.Models.DTO;
@@ -109,6 +110,7 @@ namespace FormCraft.API.Extentions
                     typeof(DeleteFormsCommand).Assembly,
                     typeof(AddQuestionsToFormCommand).Assembly,
                     typeof(DeleteQuestionsFromFormCommand).Assembly,
+                    typeof(SetAnswerToQuestionCommand).Assembly,
                     typeof(GetAllTemplatesQuery).Assembly,
                     typeof(GetTemplateQuery).Assembly);
             });

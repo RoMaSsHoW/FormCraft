@@ -28,7 +28,7 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
 
         public async Task AddAsync(Answer answer)
         {
-            await _dbContext.Answers .AddAsync(answer);
+            await _dbContext.Answers.AddAsync(answer);
         }
 
         public async Task RemoveAsync(Guid id)
