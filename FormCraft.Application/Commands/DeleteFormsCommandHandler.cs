@@ -1,6 +1,5 @@
 ﻿using FormCraft.Application.Common.Messaging;
 using FormCraft.Application.Common.Persistance;
-using FormCraft.Application.Services;
 using FormCraft.Domain.Aggregates.FormAggregate;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
@@ -28,28 +27,48 @@ namespace FormCraft.Application.Commands
         {
             ValidateRequest(request);
 
-            var userId = _currentUserService.GetUserId();
-            var userRole = _currentUserService.GetRole();
+            var userDetails = GetUserDetails();
 
-            var forms = await _formRepository.FindFormsByIdAsync(request.FormIds);
-            var allowedForms = new List<Form>();
+            var formsToDelete = await GetFormsToDeleteAsync(request.FormIds, userDetails);
 
-            foreach (var form in forms)
+            if (formsToDelete.Any())
             {
-                if (form.AuthorId == userId || Role.FromName<Role>(userRole) == Role.Admin)
-                {
-                    allowedForms.Add(form);
-                }
+                _formRepository.Remove(formsToDelete);
+                await _unitOfWork.CommitAsync();
             }
-
-            _formRepository.RemoveAsync(allowedForms);
-            await _unitOfWork.CommitAsync(cancellationToken);
         }
 
         private void ValidateRequest(DeleteFormsCommand request)
         {
             if (!_currentUserService.IsAuthenticated())
                 throw new UnauthorizedAccessException("User unauthorized");
+
+            if (!request.FormIds.Any())
+                throw new ArgumentException("Form list cannot be null");
+        }
+
+        private (Guid UserId, Role UserRole) GetUserDetails()
+        {
+            var userId = _currentUserService.GetUserId()!;
+            var userRole = Role.FromName<Role>(_currentUserService.GetRole()!);
+
+            return ((Guid)userId, userRole);
+        }
+
+        private async Task<IEnumerable<Form>> GetFormsToDeleteAsync(IEnumerable<Guid> formIds, (Guid UserId, Role UserRole) userDetails)
+        {
+            var forms = await _formRepository.FindFormsByIdAsync(formIds);
+            var formsToDelete = new List<Form>();
+
+            foreach (var form in forms)
+            {
+                if (form.AuthorId == userDetails.UserId || userDetails.UserRole == Role.Admin)
+                {
+                    formsToDelete.Add(form);
+                }
+            }
+
+            return formsToDelete;
         }
     }
 }

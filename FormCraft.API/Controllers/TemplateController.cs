@@ -41,10 +41,10 @@ namespace FormCraft.API.Controllers
             [FromQuery] string description,
             [FromQuery] string topic,
             [FromQuery] IEnumerable<string> tags,
-            [FromQuery] bool isPublic,
-            [FromBody] IEnumerable<QuestionDTO> questions)
+            [FromBody] IEnumerable<QuestionDTO> questions,
+            [FromQuery] bool isPublic = true)
         {
-            var command = new CreateNewFormWithQuestionCommand(title, description, topic, tags, isPublic, questions);
+            var command = new CreateNewFormWithQuestionCommand(title, description, topic, tags, questions, isPublic);
             await Mediator.Send(command);
             return Ok();
         }
@@ -83,10 +83,9 @@ namespace FormCraft.API.Controllers
 
         [HttpDelete("deleteQuestions")]
         public async Task<IActionResult> DeleteQuestions(
-            [FromQuery] Guid FormId,
             IEnumerable<Guid> QuestionIds)
         {
-            var command = new DeleteQuestionsFromFormCommand(FormId, QuestionIds);
+            var command = new DeleteQuestionsFromFormCommand(QuestionIds);
             await Mediator.Send(command);
             return Ok();
         }

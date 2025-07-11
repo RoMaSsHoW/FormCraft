@@ -50,49 +50,46 @@ namespace FormCraft.Application.Commands
             if (!_topicExisteceChecker.IsExist(request.NewTemplateInformation.TopicName))
                 throw new ArgumentException("Topic name not exist");
 
-            if (request.NewTemplateInformation.Questions.Count() <= 0)
+            if (!request.NewTemplateInformation.Questions.Any())
                 throw new ArgumentException("Question list cannot be null");
         }
 
-        private async Task<List<Tag>> GetExistenceAndCreateNewTags(IEnumerable<string> tagNames)
+        private async Task<IEnumerable<Tag>> GetOrCreateTagsAsync(IEnumerable<string> tagNames)
         {
-            var allTags = new List<Tag>();
-            var newTags = new List<Tag>();
+            var tags = new List<Tag>();
 
             foreach (var tagName in tagNames)
             {
-                var existenseTag = await _tagRepository.FindByNameAsync(tagName);
-
-                if (existenseTag != null)
-                    allTags.Add(existenseTag);
+                var existenceTag = await _tagRepository.FindByNameAsync(tagName);
+                if (existenceTag != null)
+                {
+                    tags.Add(existenceTag);
+                }
                 else
-                    newTags.Add(new Tag(tagName));
+                {
+                    var newTag = new Tag(tagName);
+                    await _tagRepository.CreateAsync(newTag);
+                    tags.Add(newTag);
+                }
             }
 
-            if (newTags.Any())
-            {
-                await _tagRepository.CreateAsync(newTags);
-                allTags.AddRange(newTags);
-            }
-
-            return allTags;
+            return tags;
         }
 
         private async Task ChangeFormAsync(UpdateFormWithQuestionCommand request)
         {
-            var existenceTemplate = await _formRepository.FindByIdAsync(request.NewTemplateInformation.Id);
+            var existingForm = await _formRepository.FindByIdAsync(request.NewTemplateInformation.Id);
 
-            existenceTemplate.ChangeTitle(request.NewTemplateInformation.Title, _currentUserService);
-            existenceTemplate.ChangeDescription(request.NewTemplateInformation.Description, _currentUserService);
-            existenceTemplate.ChangeTopic(request.NewTemplateInformation.TopicName, _topicExisteceChecker, _currentUserService);
-            existenceTemplate.ChangeVisibility(request.NewTemplateInformation.IsPublic, _currentUserService);
+            existingForm.ChangeTitle(request.NewTemplateInformation.Title, _currentUserService);
+            existingForm.ChangeDescription(request.NewTemplateInformation.Description, _currentUserService);
+            existingForm.ChangeTopic(request.NewTemplateInformation.TopicName, _topicExisteceChecker, _currentUserService);
+            existingForm.ChangeVisibility(request.NewTemplateInformation.IsPublic, _currentUserService);
 
-            var tags = await GetExistenceAndCreateNewTags(request.NewTemplateInformation.Tags);
+            var tags = await GetOrCreateTagsAsync(request.NewTemplateInformation.Tags);
 
             if (tags.Any())
                 foreach (var tag in tags)
-                    existenceTemplate.AddTag(tag, _currentUserService);
-
+                    existingForm.AddTag(tag, _currentUserService);
         }
 
         private async Task ChangeQuestionsAsync(UpdateFormWithQuestionCommand request)

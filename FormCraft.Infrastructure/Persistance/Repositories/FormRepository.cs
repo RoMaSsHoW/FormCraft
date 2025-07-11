@@ -28,7 +28,7 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
             await _dbContext.Forms.AddAsync(form);
         }
 
-        public void RemoveAsync(IEnumerable<Form> forms)
+        public void Remove(IEnumerable<Form> forms)
         {
             if (forms.Any())
             {

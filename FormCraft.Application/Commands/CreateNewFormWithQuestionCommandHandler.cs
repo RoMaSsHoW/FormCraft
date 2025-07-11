@@ -36,9 +36,13 @@ namespace FormCraft.Application.Commands
         public async Task Handle(CreateNewFormWithQuestionCommand request, CancellationToken cancellationToken)
         {
             ValidateRequest(request);
-            var tags = await GetExistenceAndCreateNewTags(request.Tags);
+
+            var tags = await GetOrCreateTagsAsync(request.Tags);
+
             var form = await CreateFormAsync(request, tags);
+
             await AddQuestionsAsync(form, request.Questions);
+
             await _unitOfWork.CommitAsync();
         }
 
@@ -54,31 +58,29 @@ namespace FormCraft.Application.Commands
                 throw new ArgumentException("Question list cannot be null");
         }
 
-        private async Task<List<Tag>> GetExistenceAndCreateNewTags(IEnumerable<string> tagNames)
+        private async Task<IEnumerable<Tag>> GetOrCreateTagsAsync(IEnumerable<string> tagNames)
         {
-            var allTags = new List<Tag>();
-            var newTags = new List<Tag>();
+            var tags = new List<Tag>();
 
             foreach (var tagName in tagNames)
             {
-                var existenseTag = await _tagRepository.FindByNameAsync(tagName);
-
-                if (existenseTag != null)
-                    allTags.Add(existenseTag);
+                var existenceTag = await _tagRepository.FindByNameAsync(tagName);
+                if (existenceTag != null)
+                {
+                    tags.Add(existenceTag);
+                }
                 else
-                    newTags.Add(new Tag(tagName));
+                {
+                    var newTag = new Tag(tagName);
+                    await _tagRepository.CreateAsync(newTag);
+                    tags.Add(newTag);
+                }
             }
 
-            if (newTags.Any())
-            {
-                await _tagRepository.CreateAsync(newTags);
-                allTags.AddRange(newTags);
-            }
-
-            return allTags;
+            return tags;
         }
 
-        private async Task<Form> CreateFormAsync(CreateNewFormWithQuestionCommand request, List<Tag> tags)
+        private async Task<Form> CreateFormAsync(CreateNewFormWithQuestionCommand request, IEnumerable<Tag> tags)
         {
             var userId = _currentUserService.GetUserId();
 
@@ -97,16 +99,19 @@ namespace FormCraft.Application.Commands
         private async Task AddQuestionsAsync(Form form, IEnumerable<QuestionDTO> questions)
         {
             var newQuestions = new List<Question>();
+            var existingQuestions = form.Questions;
+            var lastOrderNumber = existingQuestions.Any() ? existingQuestions.Max(q => q.OrderNumber) : 0;
 
             foreach (var question in questions)
             {
-                if (form.Questions.Any(q => q.Text == question.Text
-                    && q.Type == QuestionType.FromName<QuestionType>(question.Type)))
+                var type = QuestionType.FromName<QuestionType>(question.Type);
+
+                if (existingQuestions.Any(q => q.Text == question.Text && q.Type == type))
                     continue;
 
-                var lastOrderNumber = form.Questions.Any() ? form.Questions.Max(q => q.OrderNumber) : 0;
+                var newQuestion = Question.Create(form.Id, form.AuthorId, question.Text, question.Type, lastOrderNumber + 1);
 
-                newQuestions.Add(Question.Create(form.Id, form.AuthorId, question.Text, question.Type, lastOrderNumber + 1));
+                newQuestions.Add(newQuestion);
             }
 
             if (newQuestions.Any())

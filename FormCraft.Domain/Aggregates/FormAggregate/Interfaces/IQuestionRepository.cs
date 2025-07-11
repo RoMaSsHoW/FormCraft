@@ -3,8 +3,9 @@
     public interface IQuestionRepository
     {
         Task<Question> FindByIdAsync(Guid id);
+        Task<IEnumerable<Question>> FindQuestionsByIdAsync(IEnumerable<Guid> ids);
         Task CreateAsync(Question question);
         Task CreateAsync(IEnumerable<Question> questions);
-        Task RemoveAsync(IEnumerable<Guid> ids);
+        void Remove(IEnumerable<Question> questions);
     }
 }

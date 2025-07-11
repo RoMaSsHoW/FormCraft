@@ -2,5 +2,5 @@
 
 namespace FormCraft.Application.Commands
 {
-    public record DeleteQuestionsFromFormCommand(Guid FormId, IEnumerable<Guid> QuestionIds) : ICommand;
+    public record DeleteQuestionsFromFormCommand(IEnumerable<Guid> QuestionIds) : ICommand;
 }
