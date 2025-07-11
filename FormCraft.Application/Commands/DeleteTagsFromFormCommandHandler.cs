@@ -1,50 +1,48 @@
 ﻿using FormCraft.Application.Common.Messaging;
 using FormCraft.Application.Common.Persistance;
-using FormCraft.Domain.Aggregates.FormAggregate;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
 
 namespace FormCraft.Application.Commands
 {
-    public class DeleteFormsCommandHandler : ICommandHandler<DeleteFormsCommand>
+    public class DeleteTagsFromFormCommandHandler : ICommandHandler<DeleteTagsFromFormCommand>
     {
+        private readonly IFormTagRepository _formTagRepository;
         private readonly IFormRepository _formRepository;
         private readonly ICurrentUserService _currentUserService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public DeleteFormsCommandHandler(
+        public DeleteTagsFromFormCommandHandler(
+            IFormTagRepository formTagRepository,
             IFormRepository formRepository,
             ICurrentUserService currentUserService,
             IUnitOfWork unitOfWork)
         {
+            _formTagRepository = formTagRepository;
             _formRepository = formRepository;
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
         }
 
-        public async Task Handle(DeleteFormsCommand request, CancellationToken cancellationToken)
+        public async Task Handle(DeleteTagsFromFormCommand request, CancellationToken cancellationToken)
         {
             ValidateRequest(request);
 
             var userDetails = GetUserDetails();
 
-            var formsToDelete = await GetFormsToDeleteAsync(request.FormIds, userDetails);
+            await GetTagsToDeleteAsync(request.FormId, request.TagIds, userDetails);
 
-            if (formsToDelete.Any())
-            {
-                _formRepository.Remove(formsToDelete);
-                await _unitOfWork.CommitAsync();
-            }
+            await _unitOfWork.CommitAsync();
         }
 
-        private void ValidateRequest(DeleteFormsCommand request)
+        private void ValidateRequest(DeleteTagsFromFormCommand request)
         {
             if (!_currentUserService.IsAuthenticated())
                 throw new UnauthorizedAccessException("User unauthorized");
 
-            if (!request.FormIds.Any())
-                throw new ArgumentException("Form list cannot be null");
+            if (!request.TagIds.Any())
+                throw new ArgumentException("Tag list cannot be null");
         }
 
         private (Guid UserId, Role UserRole) GetUserDetails()
@@ -55,20 +53,15 @@ namespace FormCraft.Application.Commands
             return ((Guid)userId, userRole);
         }
 
-        private async Task<IEnumerable<Form>> GetFormsToDeleteAsync(IEnumerable<Guid> formIds, (Guid UserId, Role UserRole) userDetails)
+        private async Task GetTagsToDeleteAsync(Guid formId, IEnumerable<Guid> tagIds, (Guid UserId, Role UserRole) userDetails)
         {
-            var forms = await _formRepository.FindFormsByIdAsync(formIds);
-            var formsToDelete = new List<Form>();
+            var form = await _formRepository.FindByIdAsync(formId);
+            var formTags = await _formTagRepository.FindFormTagsByTagIdsAsync(tagIds);
 
-            foreach (var form in forms)
+            if (form.AuthorId == userDetails.UserId || userDetails.UserRole == Role.Admin)
             {
-                if (form.AuthorId == userDetails.UserId || userDetails.UserRole == Role.Admin)
-                {
-                    formsToDelete.Add(form);
-                }
+                _formTagRepository.Remove(formTags);
             }
-
-            return formsToDelete;
         }
     }
 }

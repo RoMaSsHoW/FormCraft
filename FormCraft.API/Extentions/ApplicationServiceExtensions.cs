@@ -52,6 +52,7 @@ namespace FormCraft.API.Extentions
             services.AddScoped<ITopicRepository, TopicRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IFormTagRepository, FormTagRepository>();
         }
 
         private static void ConfigureJwtAuthenticationAndAuthorization(IServiceCollection services, IConfiguration configuration)
@@ -104,6 +105,7 @@ namespace FormCraft.API.Extentions
                 mc.RegisterServicesFromAssemblies(
                     typeof(CreateNewFormWithQuestionCommand).Assembly,
                     typeof(UpdateFormWithQuestionCommand).Assembly,
+                    typeof(DeleteTagsFromFormCommand).Assembly,
                     typeof(DeleteFormsCommand).Assembly,
                     typeof(AddQuestionsToFormCommand).Assembly,
                     typeof(DeleteQuestionsFromFormCommand).Assembly,

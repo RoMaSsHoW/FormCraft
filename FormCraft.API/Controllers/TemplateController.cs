@@ -1,5 +1,6 @@
 ﻿using FormCraft.Application.Commands;
 using FormCraft.Application.Models.DTO;
+using FormCraft.Application.Models.RequestModels;
 using FormCraft.Application.Models.ViewModels;
 using FormCraft.Application.Queries;
 using MediatR;
@@ -41,20 +42,31 @@ namespace FormCraft.API.Controllers
             [FromQuery] string description,
             [FromQuery] string topic,
             [FromQuery] IEnumerable<string> tags,
-            [FromQuery] bool isPublic,
-            [FromBody] IEnumerable<QuestionDTO> questions)
+            [FromBody] IEnumerable<QuestionDTO> questions,
+            [FromQuery] bool isPublic = true)
         {
-            var command = new CreateNewFormWithQuestionCommand(title, description, topic, tags, isPublic, questions);
+            var command = new CreateNewFormWithQuestionCommand(title, description, topic, tags, questions, isPublic);
             await Mediator.Send(command);
             return Ok();
         }
 
 
         [HttpPut("updateTemplate")]
-        public async Task<IActionResult> Update(
-            [FromBody] TemplateView newTemplateInformation)
+        public async Task<ActionResult<byte[]>> Update(
+            [FromBody] UpdateTemplateRequest request)
         {
-            var command = new UpdateFormWithQuestionCommand(newTemplateInformation);
+            var command = new UpdateFormWithQuestionCommand(request.NewTemplateInformation, request.RowVersion);
+            var result = await Mediator.Send(command);
+            return Ok(result);
+        }
+
+
+        [HttpDelete("deleteTagsFromForm")]
+        public async Task<IActionResult> DeleteTags(
+            [FromQuery] Guid FormId,
+            IEnumerable<Guid> Tags)
+        {
+            var command = new DeleteTagsFromFormCommand(FormId, Tags);
             await Mediator.Send(command);
             return Ok();
         }
@@ -83,10 +95,9 @@ namespace FormCraft.API.Controllers
 
         [HttpDelete("deleteQuestions")]
         public async Task<IActionResult> DeleteQuestions(
-            [FromQuery] Guid FormId,
             IEnumerable<Guid> QuestionIds)
         {
-            var command = new DeleteQuestionsFromFormCommand(FormId, QuestionIds);
+            var command = new DeleteQuestionsFromFormCommand(QuestionIds);
             await Mediator.Send(command);
             return Ok();
         }

@@ -1,4 +1,5 @@
-﻿using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
+﻿using System.ComponentModel.DataAnnotations;
+using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
@@ -60,6 +61,10 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
         public DateTime LastModified { get; private set; }
         public DateTime CreationTime { get; private set; }
 
+        [Timestamp] 
+        public byte[] RowVersion { get; private set; } = default;
+
+
         public static Form Create(
             Guid userId,
             string title,
@@ -92,9 +97,21 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
 
         private void AddTag(Tag tag)
         {
-            if (_tags.Any(t => t.TagId == tag.Id)) return;
+            if (_tags.Any(t => t.TagId == tag.Id)) 
+                return;
+            
             var formTag = new FormTag(Id, tag.Id);
             _tags.Add(formTag);
+        }
+        
+        public void AddQuestion(string questionText, string questionType, int orderNumber)
+        {
+            int nextOrderNumber = orderNumber > 0
+                ? orderNumber
+                : (_questions.Any() ? _questions.Max(q => q.OrderNumber) + 1 : 1);
+
+            var question = Question.Create(Id, AuthorId, questionText, questionType, nextOrderNumber);
+            _questions.Add(question);
         }
 
         public void AddTag(Tag tag, ICurrentUserService currentUserService)

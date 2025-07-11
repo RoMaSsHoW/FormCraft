@@ -91,6 +91,11 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_modified");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(255)

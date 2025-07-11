@@ -16,8 +16,6 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
         public async Task<Form> FindByIdAsync(Guid id)
         {
             var form = await _dbContext.Forms
-                .Include(f => f.Tags)
-                .Include(f => f.Questions)
                 .FirstOrDefaultAsync(f => f.Id == id);
 
             return form;
@@ -28,7 +26,20 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
             await _dbContext.Forms.AddAsync(form);
         }
 
-        public void RemoveAsync(IEnumerable<Form> forms)
+        public void SetOriginalRowVersion(Form form, byte[] rowVersion)
+        {
+            if (form == null)
+                throw new ArgumentNullException(nameof(form));
+
+            if (rowVersion == null || rowVersion.Length == 0)
+                throw new ArgumentException("RowVersion must be a non-empty byte array.", nameof(rowVersion));
+
+            _dbContext.Entry(form)
+                .Property("RowVersion")
+                .OriginalValue = rowVersion;
+        }
+
+        public void Remove(IEnumerable<Form> forms)
         {
             if (forms.Any())
             {

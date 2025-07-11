@@ -3,5 +3,5 @@ using FormCraft.Application.Models.ViewModels;
 
 namespace FormCraft.Application.Commands
 {
-    public record UpdateFormWithQuestionCommand(TemplateView NewTemplateInformation) : ICommand;
+    public record UpdateFormWithQuestionCommand(TemplateView NewTemplateInformation, byte[] RowVersion) : ICommand<byte[]>;
 }

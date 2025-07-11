@@ -31,17 +31,15 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
             await _dbContext.Questions.AddRangeAsync(questions);
         }
 
-        public async Task RemoveAsync(IEnumerable<Guid> ids)
+        public void Remove(IEnumerable<Question> questions)
         {
-            var questions = await FindQuestionByIdsAsync(ids);
-
             if (questions.Any())
             {
                 _dbContext.Questions.RemoveRange(questions);
             }
         }
 
-        private async Task<List<Question>> FindQuestionByIdsAsync(IEnumerable<Guid> ids)
+        public async Task<IEnumerable<Question>> FindQuestionsByIdAsync(IEnumerable<Guid> ids)
         {
             var questions = await _dbContext.Questions
                 .Where(q => ids.Contains(q.Id))
