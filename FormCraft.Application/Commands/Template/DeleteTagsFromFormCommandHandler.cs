@@ -4,7 +4,7 @@ using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
 
-namespace FormCraft.Application.Commands
+namespace FormCraft.Application.Commands.Template
 {
     public class DeleteTagsFromFormCommandHandler : ICommandHandler<DeleteTagsFromFormCommand>
     {
@@ -48,7 +48,7 @@ namespace FormCraft.Application.Commands
         private (Guid UserId, Role UserRole) GetUserDetails()
         {
             var userId = _currentUserService.GetUserId()!;
-            var userRole = Role.FromName<Role>(_currentUserService.GetRole()!);
+            var userRole = Domain.Common.Enumeration.FromName<Role>(_currentUserService.GetRole()!);
 
             return ((Guid)userId, userRole);
         }

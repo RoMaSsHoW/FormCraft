@@ -6,7 +6,7 @@ using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 
-namespace FormCraft.Application.Commands
+namespace FormCraft.Application.Commands.Template
 {
     public class CreateNewFormWithQuestionCommandHandler : ICommandHandler<CreateNewFormWithQuestionCommand>
     {
@@ -104,7 +104,7 @@ namespace FormCraft.Application.Commands
 
             foreach (var question in questions)
             {
-                var type = QuestionType.FromName<QuestionType>(question.Type);
+                var type = Domain.Common.Enumeration.FromName<QuestionType>(question.Type);
 
                 if (existingQuestions.Any(q => q.Text == question.Text && q.Type == type))
                     continue;

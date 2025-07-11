@@ -6,7 +6,7 @@ using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
 
-namespace FormCraft.Application.Commands
+namespace FormCraft.Application.Commands.Template
 {
     public class AddQuestionsToFormCommandHandler : ICommandHandler<AddQuestionsToFormCommand>
     {
@@ -56,7 +56,7 @@ namespace FormCraft.Application.Commands
         private (Guid UserId, Role UserRole) GetUserDetails()
         {
             var userId = _currentUserService.GetUserId()!;
-            var userRole = Role.FromName<Role>(_currentUserService.GetRole()!);
+            var userRole = Domain.Common.Enumeration.FromName<Role>(_currentUserService.GetRole()!);
 
             return ((Guid)userId, userRole);
         }
@@ -81,7 +81,7 @@ namespace FormCraft.Application.Commands
 
             foreach (var question in request.Questions)
             {
-                var type = QuestionType.FromName<QuestionType>(question.Type);
+                var type = Domain.Common.Enumeration.FromName<QuestionType>(question.Type);
 
                 if (existingQuestions.Any(q => q.Text == question.Text && q.Type == type))
                     continue;
