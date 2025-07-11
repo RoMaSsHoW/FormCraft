@@ -92,9 +92,21 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
 
         private void AddTag(Tag tag)
         {
-            if (_tags.Any(t => t.TagId == tag.Id)) return;
+            if (_tags.Any(t => t.TagId == tag.Id)) 
+                return;
+            
             var formTag = new FormTag(Id, tag.Id);
             _tags.Add(formTag);
+        }
+        
+        public void AddQuestion(string questionText, string questionType, int orderNumber)
+        {
+            int nextOrderNumber = orderNumber > 0
+                ? orderNumber
+                : (_questions.Any() ? _questions.Max(q => q.OrderNumber) + 1 : 1);
+
+            var question = Question.Create(Id, AuthorId, questionText, questionType, nextOrderNumber);
+            _questions.Add(question);
         }
 
         public void AddTag(Tag tag, ICurrentUserService currentUserService)
