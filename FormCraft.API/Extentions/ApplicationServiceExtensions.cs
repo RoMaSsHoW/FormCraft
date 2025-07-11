@@ -52,6 +52,7 @@ namespace FormCraft.API.Extentions
             services.AddScoped<ITopicRepository, TopicRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IFormTagRepository, FormTagRepository>();
         }
 
         private static void ConfigureJwtAuthenticationAndAuthorization(IServiceCollection services, IConfiguration configuration)
