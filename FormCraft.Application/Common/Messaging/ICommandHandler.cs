@@ -2,12 +2,12 @@
 
 namespace FormCraft.Application.Common.Messaging
 {
-    public interface ICommandHandler<TCommand> : IRequestHandler<TCommand>
+    public interface ICommandHandler<in TCommand> : IRequestHandler<TCommand>
         where TCommand : ICommand
     {
     }
 
-    public interface ICommandHandler<TCommand, TResult> : IRequestHandler<TCommand, TResult>
+    public interface ICommandHandler<in TCommand, TResult> : IRequestHandler<TCommand, TResult>
         where TCommand : ICommand<TResult>
     {
     }

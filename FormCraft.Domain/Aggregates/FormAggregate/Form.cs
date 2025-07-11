@@ -1,4 +1,5 @@
-﻿using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
+﻿using System.ComponentModel.DataAnnotations;
+using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
@@ -59,6 +60,10 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
         public bool IsPublic { get; private set; }
         public DateTime LastModified { get; private set; }
         public DateTime CreationTime { get; private set; }
+
+        [Timestamp] 
+        public byte[] RowVersion { get; private set; } = default;
+
 
         public static Form Create(
             Guid userId,

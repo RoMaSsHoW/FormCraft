@@ -2,15 +2,15 @@
 {
     public class TemplateView
     {
-        public Guid Id { get; set; }
-        public Guid AuthorId { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public string TopicName { get; set; }
-        public bool IsPublic { get; set; }
-        public DateTime CreationTime { get; set; }
-        public DateTime LastModified { get; set; }
-        public List<string> Tags { get; set; }
-        public List<QuestionView> Questions { get; set; }
+        public Guid Id { get; init; }
+        public Guid AuthorId { get; init; }
+        public string Title { get; init; }
+        public string Description { get; init; }
+        public string TopicName { get; init; }
+        public bool IsPublic { get; init; }
+        public DateTime CreationTime { get; init; }
+        public DateTime LastModified { get; init; }
+        public List<string> Tags { get; init; }
+        public List<QuestionView> Questions { get; init; }
     }
 }

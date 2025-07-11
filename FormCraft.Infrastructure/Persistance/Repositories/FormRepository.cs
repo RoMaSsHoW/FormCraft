@@ -26,6 +26,19 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
             await _dbContext.Forms.AddAsync(form);
         }
 
+        public void SetOriginalRowVersion(Form form, byte[] rowVersion)
+        {
+            if (form == null)
+                throw new ArgumentNullException(nameof(form));
+
+            if (rowVersion == null || rowVersion.Length == 0)
+                throw new ArgumentException("RowVersion must be a non-empty byte array.", nameof(rowVersion));
+
+            _dbContext.Entry(form)
+                .Property("RowVersion")
+                .OriginalValue = rowVersion;
+        }
+
         public void Remove(IEnumerable<Form> forms)
         {
             if (forms.Any())
