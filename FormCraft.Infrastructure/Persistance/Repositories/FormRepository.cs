@@ -16,8 +16,6 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
         public async Task<Form> FindByIdAsync(Guid id)
         {
             var form = await _dbContext.Forms
-                .Include(f => f.Tags)
-                .Include(f => f.Questions)
                 .FirstOrDefaultAsync(f => f.Id == id);
 
             return form;

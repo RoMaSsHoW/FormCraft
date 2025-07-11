@@ -60,6 +60,17 @@ namespace FormCraft.API.Controllers
         }
 
 
+        [HttpDelete("deleteTagsFromForm")]
+        public async Task<IActionResult> DeleteTags(
+            [FromQuery] Guid FormId,
+            IEnumerable<Guid> Tags)
+        {
+            var command = new DeleteTagsFromFormCommand(FormId, Tags);
+            await Mediator.Send(command);
+            return Ok();
+        }
+
+
         [HttpDelete("deleteTemplates")]
         public async Task<IActionResult> Delete(
             IEnumerable<Guid> FormIds)
