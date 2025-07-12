@@ -29,11 +29,25 @@ namespace FormCraft.Infrastructure
         {
             modelBuilder.ApplyConfiguration(new FormConfiguration());
             modelBuilder.ApplyConfiguration(new QuestionConfiguration());
-            modelBuilder.ApplyConfiguration(new AnswerConfiguration());
             modelBuilder.ApplyConfiguration(new TagConfiguration());
             modelBuilder.ApplyConfiguration(new TopicConfiguration());
             modelBuilder.ApplyConfiguration(new FormTagConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new AnswerConfiguration());
+
+            modelBuilder.Entity<BooleanAnswer>()
+                .Property(a => a.Value)
+                .HasColumnName("boolean_value");
+
+            modelBuilder.Entity<NumberAnswer>()
+                .Property(a => a.Value)
+                .HasColumnName("number_value");
+
+            modelBuilder.Entity<TextAnswer>()
+                .Property(a => a.Value)
+                .HasColumnName("text_value")
+                .HasMaxLength(255);
+
             base.OnModelCreating(modelBuilder);
         }
 

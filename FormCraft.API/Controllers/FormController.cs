@@ -1,8 +1,10 @@
 ﻿using FormCraft.Application.Commands.FormCommands;
 using FormCraft.Application.Commands.Template;
 using FormCraft.Application.Models.DTO;
+using FormCraft.Application.Models.RequestModels;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace FormCraft.API.Controllers
 {
@@ -13,11 +15,9 @@ namespace FormCraft.API.Controllers
         }
 
         [HttpPost("setAnswerToQuestion")]
-        public async Task<IActionResult> SetAnswer(
-            [FromQuery] Guid QuestionId,
-            [FromQuery] object answerValue)
+        public async Task<IActionResult> SetAnswer([FromForm] AnswerRequest answerRequest)
         {
-            var command = new SetAnswerToQuestionCommand(QuestionId, answerValue);
+            var command = new SetAnswerToQuestionCommand(answerRequest);
             await Mediator.Send(command);
             return Ok();
         }

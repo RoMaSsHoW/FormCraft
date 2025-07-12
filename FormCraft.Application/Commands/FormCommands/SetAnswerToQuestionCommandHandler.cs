@@ -32,7 +32,7 @@ namespace FormCraft.Application.Commands.FormCommands
         {
             ValidateRequest(request);
 
-            var question = await _questionRepository.FindByIdAsync(request.QuestionId);
+            var question = await _questionRepository.FindByIdAsync(request.AnswerRequest.QuestionId);
             var userDetails = GetUserDetails();
 
             Answer answer;
@@ -41,22 +41,22 @@ namespace FormCraft.Application.Commands.FormCommands
             {
                 answer = TextAnswer.Create(
                     userDetails.UserId,
-                    request.QuestionId,
-                    request.answerValue.ToString()!);
+                    request.AnswerRequest.QuestionId,
+                    request.AnswerRequest.TeaxtValue!);
             }
             else if (question.Type == QuestionType.Number)
             {
                 answer = NumberAnswer.Create(
                     userDetails.UserId,
-                    request.QuestionId,
-                    Convert.ToInt32(request.answerValue));
+                    request.AnswerRequest.QuestionId,
+                    (int)request.AnswerRequest.NumberValue!);
             }
             else if (question.Type == QuestionType.Boolean)
             {
                 answer = BooleanAnswer.Create(
                     userDetails.UserId,
-                    request.QuestionId,
-                    Convert.ToBoolean(request.answerValue));
+                    request.AnswerRequest.QuestionId,
+                    (bool)request.AnswerRequest.BooleanValue!);
             }
             else
             {

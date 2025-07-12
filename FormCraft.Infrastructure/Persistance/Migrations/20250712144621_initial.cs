@@ -127,13 +127,10 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     question_id = table.Column<Guid>(type: "uuid", nullable: false),
                     author_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    boolean_value = table.Column<bool>(type: "boolean", nullable: true),
                     discriminator = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false),
+                    boolean_value = table.Column<bool>(type: "boolean", nullable: true),
                     number_value = table.Column<int>(type: "integer", nullable: true),
-                    text_value = table.Column<string>(type: "text", nullable: true),
-                    Value = table.Column<bool>(type: "boolean", nullable: true),
-                    NumberAnswer_Value = table.Column<int>(type: "integer", nullable: true),
-                    TextAnswer_Value = table.Column<string>(type: "text", nullable: true)
+                    text_value = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true)
                 },
                 constraints: table =>
                 {

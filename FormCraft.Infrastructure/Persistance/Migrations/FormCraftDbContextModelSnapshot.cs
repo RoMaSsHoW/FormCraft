@@ -36,19 +36,10 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("question_id");
 
-                    b.Property<bool?>("boolean_value")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("discriminator")
                         .IsRequired()
                         .HasMaxLength(8)
                         .HasColumnType("character varying(8)");
-
-                    b.Property<int?>("number_value")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("text_value")
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -249,7 +240,8 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                     b.HasBaseType("FormCraft.Domain.Aggregates.FormAggregate.Answer");
 
                     b.Property<bool>("Value")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("boolean_value");
 
                     b.HasDiscriminator().HasValue("Boolean");
                 });
@@ -259,13 +251,8 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                     b.HasBaseType("FormCraft.Domain.Aggregates.FormAggregate.Answer");
 
                     b.Property<int>("Value")
-                        .HasColumnType("integer");
-
-                    b.ToTable("answer", t =>
-                        {
-                            t.Property("Value")
-                                .HasColumnName("NumberAnswer_Value");
-                        });
+                        .HasColumnType("integer")
+                        .HasColumnName("number_value");
 
                     b.HasDiscriminator().HasValue("Number");
                 });
@@ -276,13 +263,9 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
 
                     b.Property<string>("Value")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.ToTable("answer", t =>
-                        {
-                            t.Property("Value")
-                                .HasColumnName("TextAnswer_Value");
-                        });
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("text_value");
 
                     b.HasDiscriminator().HasValue("Text");
                 });

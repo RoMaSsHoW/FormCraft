@@ -25,13 +25,6 @@ namespace FormCraft.Infrastructure.Persistance.Configuration
                 .HasValue<NumberAnswer>("Number")
                 .HasValue<BooleanAnswer>("Boolean");
 
-            builder.Property<string?>("text_value")
-                .HasColumnName("text_value");
-            builder.Property<int?>("number_value")
-                .HasColumnName("number_value");
-            builder.Property<bool?>("boolean_value")
-                .HasColumnName("boolean_value");
-
             builder.HasOne<Question>()
                 .WithMany(q => q.Answers)
                 .HasForeignKey(a => a.QuestionId);
