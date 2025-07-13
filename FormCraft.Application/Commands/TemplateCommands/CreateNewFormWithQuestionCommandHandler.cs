@@ -41,7 +41,7 @@ namespace FormCraft.Application.Commands.Template
 
             var form = await CreateFormAsync(request, tags);
 
-            await AddQuestionsAsync(form, request.Questions);
+            AddQuestionsAsync(form, request.Questions);
 
             await _unitOfWork.CommitAsync();
         }
@@ -96,28 +96,10 @@ namespace FormCraft.Application.Commands.Template
             return form;
         }
 
-        private async Task AddQuestionsAsync(Form form, IEnumerable<QuestionDTO> questions)
+        private void AddQuestionsAsync(Form form, IEnumerable<QuestionDTO> questions)
         {
-            var newQuestions = new List<Question>();
-            var existingQuestions = form.Questions;
-            var lastOrderNumber = existingQuestions.Any() ? existingQuestions.Max(q => q.OrderNumber) : 0;
-
             foreach (var question in questions)
-            {
-                var type = Domain.Common.Enumeration.FromName<QuestionType>(question.Type);
-
-                if (existingQuestions.Any(q => q.Text == question.Text && q.Type == type))
-                    continue;
-
-                var newQuestion = Question.Create(form.Id, form.AuthorId, question.Text, question.Type, lastOrderNumber + 1);
-
-                newQuestions.Add(newQuestion);
-            }
-
-            if (newQuestions.Any())
-            {
-                await _questionRepository.CreateAsync(newQuestions);
-            }
+                form.AddQuestion(question.Text, question.Type, _currentUserService);
         }
     }
 }

@@ -61,7 +61,7 @@ namespace FormCraft.Application.Queries
                     {
                         formView = new TemplateView()
                         {
-                            Id = form.Id,
+                            FormId = form.Id,
                             AuthorId = form.AuthorId,
                             Title = form.Title,
                             Description = form.Description,

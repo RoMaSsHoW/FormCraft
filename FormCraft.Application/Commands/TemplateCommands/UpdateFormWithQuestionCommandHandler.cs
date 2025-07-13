@@ -1,5 +1,7 @@
 ﻿using FormCraft.Application.Common.Messaging;
 using FormCraft.Application.Common.Persistance;
+using FormCraft.Application.Models.RequestModels;
+using FormCraft.Domain.Aggregates.FormAggregate;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
@@ -35,9 +37,9 @@ namespace FormCraft.Application.Commands.Template
         {
             ValidateRequest(request);
 
-            await ChangeFormAsync(request);
+            var form = await ChangeFormAsync(request);
 
-            await ChangeQuestionsAsync(request);
+            ChangeQuestions(form, request);
 
             await _unitOfWork.CommitAsync();
         }
@@ -47,8 +49,9 @@ namespace FormCraft.Application.Commands.Template
             if (!_currentUserService.IsAuthenticated())
                 throw new UnauthorizedAccessException("User unauthorized");
 
-            if (!_topicExisteceChecker.IsExist(request.NewTemplateInformation.TopicName))
-                throw new ArgumentException("Topic name not exist");
+            if (!string.IsNullOrWhiteSpace(request.NewTemplateInformation.TopicName))
+                if (!_topicExisteceChecker.IsExist(request.NewTemplateInformation.TopicName))
+                    throw new ArgumentException("Topic name not exist");
 
             if (!request.NewTemplateInformation.Questions.Any())
                 throw new ArgumentException("Question list cannot be null");
@@ -76,13 +79,19 @@ namespace FormCraft.Application.Commands.Template
             return tags;
         }
 
-        private async Task ChangeFormAsync(UpdateFormWithQuestionCommand request)
+        private async Task<Form> ChangeFormAsync(UpdateFormWithQuestionCommand request)
         {
-            var existingForm = await _formRepository.FindByIdAsync(request.NewTemplateInformation.Id);
+            var existingForm = await _formRepository.FindByIdAsync(request.NewTemplateInformation.FormId);
 
-            existingForm.ChangeTitle(request.NewTemplateInformation.Title, _currentUserService);
-            existingForm.ChangeDescription(request.NewTemplateInformation.Description, _currentUserService);
-            existingForm.ChangeTopic(request.NewTemplateInformation.TopicName, _topicExisteceChecker, _currentUserService);
+            if (!string.IsNullOrWhiteSpace(request.NewTemplateInformation.Title))
+                existingForm.ChangeTitle(request.NewTemplateInformation.Title, _currentUserService);
+
+            if (!string.IsNullOrWhiteSpace(request.NewTemplateInformation.Description))
+                existingForm.ChangeDescription(request.NewTemplateInformation.Description, _currentUserService);
+
+            if (!string.IsNullOrWhiteSpace(request.NewTemplateInformation.TopicName))
+                existingForm.ChangeTopic(request.NewTemplateInformation.TopicName, _topicExisteceChecker, _currentUserService);
+
             existingForm.ChangeVisibility(request.NewTemplateInformation.IsPublic, _currentUserService);
 
             var tags = await GetOrCreateTagsAsync(request.NewTemplateInformation.Tags);
@@ -90,14 +99,16 @@ namespace FormCraft.Application.Commands.Template
             if (tags.Any())
                 foreach (var tag in tags)
                     existingForm.AddTag(tag, _currentUserService);
+
+            return existingForm;
         }
 
-        private async Task ChangeQuestionsAsync(UpdateFormWithQuestionCommand request)
+        private void ChangeQuestions(Form form, UpdateFormWithQuestionCommand request)
         {
             for (var i = 0; i < request.NewTemplateInformation.Questions.Count; i++)
             {
                 var question = request.NewTemplateInformation.Questions[i];
-                var existenceQuestion = await _questionRepository.FindByIdAsync((Guid)question.Id!);
+                var existenceQuestion = form.Questions.First(q => q.Id == question.Id);
                 existenceQuestion.ChangeText(question.Text, _currentUserService);
                 existenceQuestion.ChangeType(question.Type, _currentUserService);
                 existenceQuestion.ChangeOrderNumber(i + 1, _currentUserService);

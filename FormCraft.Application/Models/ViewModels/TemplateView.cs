@@ -2,7 +2,7 @@
 {
     public class TemplateView
     {
-        public Guid Id { get; set; }
+        public Guid FormId { get; set; }
         public Guid AuthorId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }

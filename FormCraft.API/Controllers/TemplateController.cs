@@ -1,5 +1,6 @@
 ﻿using FormCraft.Application.Commands.Template;
 using FormCraft.Application.Models.DTO;
+using FormCraft.Application.Models.RequestModels;
 using FormCraft.Application.Models.ViewModels;
 using FormCraft.Application.Queries;
 using MediatR;
@@ -52,7 +53,7 @@ namespace FormCraft.API.Controllers
 
         [HttpPut("updateTemplate")]
         public async Task<IActionResult> Update(
-            [FromBody] TemplateView newTemplateInformation)
+            [FromBody] TemplateRequest newTemplateInformation)
         {
             var command = new UpdateFormWithQuestionCommand(newTemplateInformation);
             await Mediator.Send(command);

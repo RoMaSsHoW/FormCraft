@@ -1,7 +1,7 @@
 ﻿using FormCraft.Application.Common.Messaging;
-using FormCraft.Application.Models.ViewModels;
+using FormCraft.Application.Models.RequestModels;
 
 namespace FormCraft.Application.Commands.Template
 {
-    public record UpdateFormWithQuestionCommand(TemplateView NewTemplateInformation) : ICommand;
+    public record UpdateFormWithQuestionCommand(TemplateRequest NewTemplateInformation) : ICommand;
 }

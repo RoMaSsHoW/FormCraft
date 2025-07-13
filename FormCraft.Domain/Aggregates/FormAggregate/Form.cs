@@ -92,7 +92,9 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
 
         private void AddTag(Tag tag)
         {
-            if (_tags.Any(t => t.TagId == tag.Id)) return;
+            if (_tags.Any(t => t.TagId == tag.Id)) 
+                return;
+
             var formTag = new FormTag(Id, tag.Id);
             _tags.Add(formTag);
         }
@@ -103,6 +105,26 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
                 throw new ArgumentException("User not author or admin");
 
             AddTag(tag);
+        }
+
+        public void AddQuestion(string questionText, string questionType, ICurrentUserService currentUserService)
+        {
+            if (!UserIsAuthorOrAdmin(currentUserService))
+                throw new ArgumentException("User not author or admin");
+
+            if (_questions.Any(q => q.Text == questionText && q.Type == QuestionType.FromName<QuestionType>(questionType)))
+                return;
+
+            var nextOrderNumber = _questions.Any() ? _questions.Max(q => q.OrderNumber) + 1 : 1;
+
+            var question = Question.Create(
+                Id,
+                AuthorId,
+                questionText,
+                questionType,
+                nextOrderNumber);
+
+            _questions.Add(question);
         }
 
         public void ChangeTitle(string text, ICurrentUserService currentUserService)
