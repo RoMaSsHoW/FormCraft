@@ -1,4 +1,5 @@
 ﻿using FormCraft.Application.Commands.Template;
+using FormCraft.Application.Commands.TemplateCommands;
 using FormCraft.Application.Models.RequestModels;
 using FormCraft.Application.Models.ViewModels;
 using FormCraft.Application.Queries;
@@ -72,28 +73,6 @@ namespace FormCraft.API.Controllers
             return Ok();
         }
 
-
-        [HttpDelete("deleteTagsFromForm")]
-        public async Task<IActionResult> DeleteTags(
-            [FromQuery] Guid FormId,
-            IEnumerable<Guid> Tags)
-        {
-            var command = new DeleteTagsFromFormCommand(FormId, Tags);
-            await Mediator.Send(command);
-            return Ok();
-        }
-
-
-        [HttpDelete("deleteTemplates")]
-        public async Task<IActionResult> Delete(
-            IEnumerable<Guid> FormIds)
-        {
-            var command = new DeleteFormsCommand(FormIds);
-            await Mediator.Send(command);
-            return Ok();
-        }
-
-
         [HttpPut("addQuestionsToTemplate")]
         public async Task<IActionResult> AddQuestions(
             [FromQuery] Guid FormId,
@@ -104,12 +83,22 @@ namespace FormCraft.API.Controllers
             return Ok();
         }
 
-
-        [HttpDelete("deleteQuestions")]
-        public async Task<IActionResult> DeleteQuestions(
-            IEnumerable<Guid> QuestionIds)
+        [HttpDelete("deleteQuestionsOrTagsFromTemplate")]
+        public async Task<IActionResult> DeleteQuestionsOrTags(
+            [FromQuery] Guid FormId,
+            [FromQuery] IEnumerable<Guid> QuestionIds,
+            [FromQuery] IEnumerable<Guid> TagIds)
         {
-            var command = new DeleteQuestionsFromFormCommand(QuestionIds);
+            var command = new DeleteQuestionsOrTagsFromFormCommand(FormId, QuestionIds, TagIds);
+            await Mediator.Send(command);
+            return Ok();
+        }
+
+        [HttpDelete("deleteTemplates")]
+        public async Task<IActionResult> Delete(
+            IEnumerable<Guid> FormIds)
+        {
+            var command = new DeleteFormsCommand(FormIds);
             await Mediator.Send(command);
             return Ok();
         }
