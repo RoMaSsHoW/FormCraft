@@ -90,6 +90,8 @@ namespace FormCraft.Application.Commands.Template
 
             existingForm.ChangeVisibility(request.IsPublic, _currentUserService);
 
+            existingForm.SetLastModifiedNow(_currentUserService);
+
             var tags = await GetOrCreateTagsAsync(request.Tags);
 
             if (tags.Any())

@@ -27,6 +27,8 @@ namespace FormCraft.Application.Commands.Template
 
             var form = await _formRepository.FindByIdAsync(request.FormId);
 
+            form.SetLastModifiedNow(_currentUserService);
+
             foreach (var question in request.Questions)
                 form.AddQuestion(question.Text, question.Type, _currentUserService);
 
