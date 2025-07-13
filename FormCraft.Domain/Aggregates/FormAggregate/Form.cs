@@ -92,7 +92,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
 
         private void AddTag(Tag tag)
         {
-            if (_tags.Any(t => t.TagId == tag.Id)) 
+            if (_tags.Any(t => t.TagId == tag.Id))
                 return;
 
             var formTag = new FormTag(Id, tag.Id);
@@ -188,6 +188,14 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
                 return;
 
             IsPublic = isPublic;
+        }
+
+        public void SetLastModifiedNow(ICurrentUserService currentUserService)
+        {
+            if (!UserIsAuthorOrAdmin(currentUserService))
+                throw new ArgumentException("User not author or admin");
+
+            LastModified = DateTime.UtcNow;
         }
     }
 }
