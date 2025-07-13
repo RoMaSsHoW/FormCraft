@@ -1,5 +1,4 @@
 ﻿using FormCraft.Application.Commands.Template;
-using FormCraft.Application.Models.DTO;
 using FormCraft.Application.Models.RequestModels;
 using FormCraft.Application.Models.ViewModels;
 using FormCraft.Application.Queries;
@@ -98,7 +97,7 @@ namespace FormCraft.API.Controllers
         [HttpPut("addQuestionsToTemplate")]
         public async Task<IActionResult> AddQuestions(
             [FromQuery] Guid FormId,
-            [FromBody] IEnumerable<QuestionDTO> Questions)
+            [FromBody] IEnumerable<QuestionRequest> Questions)
         {
             var command = new AddQuestionsToFormCommand(FormId, Questions);
             await Mediator.Send(command);
