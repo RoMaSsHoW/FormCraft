@@ -1,6 +1,6 @@
 ﻿using FormCraft.Application.Common.Messaging;
 using FormCraft.Application.Common.Persistance;
-using FormCraft.Application.Models.DTO;
+using FormCraft.Application.Models.RequestModels;
 using FormCraft.Domain.Aggregates.FormAggregate;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
@@ -11,7 +11,6 @@ namespace FormCraft.Application.Commands.Template
     public class CreateNewFormWithQuestionCommandHandler : ICommandHandler<CreateNewFormWithQuestionCommand>
     {
         private readonly IFormRepository _formRepository;
-        private readonly IQuestionRepository _questionRepository;
         private readonly ITagRepository _tagRepository;
         private readonly ITopicExistenceChecker _topicExisteceChecker;
         private readonly ICurrentUserService _currentUserService;
@@ -19,14 +18,12 @@ namespace FormCraft.Application.Commands.Template
 
         public CreateNewFormWithQuestionCommandHandler(
             IFormRepository formRepository,
-            IQuestionRepository questionRepository,
             ITagRepository tagRepository,
             ITopicExistenceChecker topicExisteceChecker,
             ICurrentUserService currentUserService,
             IUnitOfWork unitOfWork)
         {
             _formRepository = formRepository;
-            _questionRepository = questionRepository;
             _tagRepository = tagRepository;
             _topicExisteceChecker = topicExisteceChecker;
             _currentUserService = currentUserService;
@@ -96,7 +93,7 @@ namespace FormCraft.Application.Commands.Template
             return form;
         }
 
-        private void AddQuestionsAsync(Form form, IEnumerable<QuestionDTO> questions)
+        private void AddQuestionsAsync(Form form, IEnumerable<QuestionRequest> questions)
         {
             foreach (var question in questions)
                 form.AddQuestion(question.Text, question.Type, _currentUserService);

@@ -1,5 +1,5 @@
 ﻿using FormCraft.Application.Common.Messaging;
-using FormCraft.Application.Models.DTO;
+using FormCraft.Application.Models.RequestModels;
 
 namespace FormCraft.Application.Commands.Template
 {
@@ -7,7 +7,7 @@ namespace FormCraft.Application.Commands.Template
         string Title,
         string Description,
         string Topic,
+        bool IsPublic,
         IEnumerable<string> Tags,
-        IEnumerable<QuestionDTO> Questions,
-        bool IsPublic) : ICommand;
+        IEnumerable<QuestionRequest> Questions) : ICommand;
 }
