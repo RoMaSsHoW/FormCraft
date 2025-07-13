@@ -225,6 +225,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
                 throw new ArgumentException("User not author or admin");
 
             LastModified = DateTime.UtcNow;
+            Version++;
         }
     }
 }

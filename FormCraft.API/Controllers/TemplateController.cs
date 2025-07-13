@@ -57,6 +57,7 @@ namespace FormCraft.API.Controllers
             [FromQuery] string? title,
             [FromQuery] string? description,
             [FromQuery] string? topic,
+            [FromQuery] long lastVersion,
             [FromQuery] IEnumerable<string> tags,
             [FromBody] IEnumerable<QuestionRequest> questions,
             [FromQuery] bool isPublic = true)
@@ -67,6 +68,7 @@ namespace FormCraft.API.Controllers
                 description,
                 topic,
                 isPublic,
+                lastVersion,
                 tags,
                 questions);
             await Mediator.Send(command);

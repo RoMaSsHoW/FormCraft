@@ -1,4 +1,6 @@
-﻿namespace FormCraft.Application.Models.ViewModels
+﻿using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
+
+namespace FormCraft.Application.Models.ViewModels
 {
     public class TemplateView
     {
@@ -10,7 +12,8 @@
         public bool IsPublic { get; set; }
         public DateTime CreationTime { get; set; }
         public DateTime LastModified { get; set; }
-        public List<string> Tags { get; set; }
+        public long Version { get; set; }
+        public List<Tag> Tags { get; set; }
         public List<QuestionView> Questions { get; set; }
     }
 }

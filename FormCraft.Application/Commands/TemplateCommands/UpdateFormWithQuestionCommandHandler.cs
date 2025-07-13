@@ -4,6 +4,7 @@ using FormCraft.Domain.Aggregates.FormAggregate;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
+using System.Threading.Tasks;
 
 namespace FormCraft.Application.Commands.Template
 {
@@ -31,7 +32,7 @@ namespace FormCraft.Application.Commands.Template
 
         public async Task Handle(UpdateFormWithQuestionCommand request, CancellationToken cancellationToken)
         {
-            ValidateRequest(request);
+            await ValidateRequest(request);
 
             var form = await ChangeFormAsync(request);
 
@@ -40,7 +41,7 @@ namespace FormCraft.Application.Commands.Template
             await _unitOfWork.CommitAsync();
         }
 
-        private void ValidateRequest(UpdateFormWithQuestionCommand request)
+        private async Task ValidateRequest(UpdateFormWithQuestionCommand request)
         {
             if (!_currentUserService.IsAuthenticated())
                 throw new UnauthorizedAccessException("User unauthorized");
@@ -48,6 +49,13 @@ namespace FormCraft.Application.Commands.Template
             if (!string.IsNullOrWhiteSpace(request.TopicName))
                 if (!_topicExisteceChecker.IsExist(request.TopicName))
                     throw new ArgumentException("Topic name not exist");
+
+            var form = await _formRepository.FindByIdAsync(request.FormId);
+            if (form == null)
+                throw new ArgumentException("Form not found");
+
+            if (form.Version != request.LastVersion)
+                throw new Exception("Concurrency conflict: The form has been modified by another user.");
 
             if (!request.Questions.Any())
                 throw new ArgumentException("Question list cannot be null");
@@ -90,13 +98,13 @@ namespace FormCraft.Application.Commands.Template
 
             existingForm.ChangeVisibility(request.IsPublic, _currentUserService);
 
-            existingForm.SetLastModifiedNow(_currentUserService);
-
             var tags = await GetOrCreateTagsAsync(request.Tags);
 
             if (tags.Any())
                 foreach (var tag in tags)
                     existingForm.AddTag(tag, _currentUserService);
+
+            existingForm.SetLastModifiedNow(_currentUserService);
 
             return existingForm;
         }

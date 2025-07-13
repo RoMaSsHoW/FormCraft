@@ -6,6 +6,7 @@ using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
 using System.Data;
+using System.Linq;
 
 namespace FormCraft.Application.Queries
 {
@@ -34,6 +35,8 @@ namespace FormCraft.Application.Queries
                     f.is_public AS IsPublic,
                     f.last_modified AS LastModified,
                     f.creation_time AS CreationTime,
+                    f.version AS Version,
+                    t.""Id"" AS Id,
                     t.name AS Name,
                     q.""Id"" AS Id,
                     q.text AS Text,
@@ -102,14 +105,15 @@ namespace FormCraft.Application.Queries
                             IsPublic = form.IsPublic,
                             LastModified = form.LastModified,
                             CreationTime = form.CreationTime,
-                            Tags = new List<string>(),
+                            Version = form.Version,
+                            Tags = new List<Tag>(),
                             Questions = new List<QuestionView>()
                         };
                         formDic.Add(form.Id, formView);
                     }
-                    if (tag != null && !formView.Tags.Contains(tag.Name))
+                    if (tag != null && !formView.Tags.Any(t => t.Id == tag.Id))
                     {
-                        formView.Tags.Add(tag.Name);
+                        formView.Tags.Add(tag);
                     }
                     if (question != null && !formView.Questions.Any(q => q.Id == question.Id))
                     {
@@ -124,7 +128,7 @@ namespace FormCraft.Application.Queries
                     return formView;
                 },
                 parameters,
-                splitOn: "Name,Id");
+                splitOn: "Id,Id");
 
             return formDic.Values;
         }

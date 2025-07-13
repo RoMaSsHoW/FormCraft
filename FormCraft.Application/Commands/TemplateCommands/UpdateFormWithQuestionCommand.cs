@@ -9,6 +9,7 @@ namespace FormCraft.Application.Commands.Template
         string? Description,
         string? TopicName,
         bool IsPublic,
+        long LastVersion,
         IEnumerable<string> Tags,
         IEnumerable<QuestionRequest> Questions) : ICommand;
 }
