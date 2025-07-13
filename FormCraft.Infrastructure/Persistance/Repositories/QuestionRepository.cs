@@ -16,6 +16,7 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
         public async Task<Question> FindByIdAsync(Guid id)
         {
             var question = await _dbContext.Questions
+                .Include(q => q.Answers)
                 .FirstOrDefaultAsync(q => q.Id == id);
 
             return question;
@@ -43,6 +44,7 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
         {
             var questions = await _dbContext.Questions
                 .Where(q => ids.Contains(q.Id))
+                .Include(q => q.Answers)
                 .ToListAsync();
             return questions;
         }

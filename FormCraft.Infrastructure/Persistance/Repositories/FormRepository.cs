@@ -40,6 +40,8 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
         {
             var forms = await _dbContext.Forms
                 .Where(f => ids.Contains(f.Id))
+                .Include(f => f.Questions)
+                .Include(f => f.Tags)
                 .ToListAsync();
             return forms;
         }
