@@ -30,9 +30,9 @@ namespace FormCraft.Infrastructure.Persistance.Configuration
                 .HasColumnName("is_public")
                 .HasDefaultValue(true)
                 .IsRequired();
-            //builder.Property(f => f.Version)
-            //    .HasColumnName("version")
-            //     .IsRowVersion();
+            builder.Property(f => f.Version)
+                .HasColumnName("version")
+                .IsConcurrencyToken();
             builder.Property(f => f.LastModified)
                 .HasColumnName("last_modified");
             builder.Property(f => f.CreationTime)

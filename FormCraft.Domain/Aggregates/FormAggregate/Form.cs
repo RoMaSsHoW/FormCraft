@@ -44,6 +44,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             TopicName = topic;
             IsPublic = isPublic;
             CreationTime = DateTime.UtcNow;
+            Version = 1;
 
             if (tags.Any())
                 foreach (var tag in tags)
@@ -59,6 +60,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
         public bool IsPublic { get; private set; }
         public DateTime LastModified { get; private set; }
         public DateTime CreationTime { get; private set; }
+        public long Version { get; private set; }
 
         public static Form Create(
             Guid userId,
