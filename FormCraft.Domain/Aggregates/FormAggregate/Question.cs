@@ -40,6 +40,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             Text = text;
             Type = QuestionType.FromName<QuestionType>(questionType);
             OrderNumber = orderNumber;
+            Version = 1;
         }
 
         public Guid FormId { get; private set; }
@@ -48,6 +49,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
         public QuestionType Type { get; private set; }
         public int OrderNumber { get; private set; }
         public IReadOnlyCollection<Answer> Answers => _answers.AsReadOnly();
+        public long Version { get; private set; }
 
         public static Question Create(
             Guid formId,
@@ -81,6 +83,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
                 return;
 
             Text = text;
+            Version++;
         }
 
         public void ChangeType(string questionType, ICurrentUserService currentUserService)
@@ -95,6 +98,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
                 return;
 
             Type = QuestionType.FromName<QuestionType>(questionType);
+            Version++;
         }
 
         public void ChangeOrderNumber(int order, ICurrentUserService currentUserService)
@@ -109,6 +113,7 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
                 return;
 
             OrderNumber = order;
+            Version++;
         }
 
         public void SetAnswer(Answer answer)

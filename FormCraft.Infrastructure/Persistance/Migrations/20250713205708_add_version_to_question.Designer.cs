@@ -3,6 +3,7 @@ using System;
 using FormCraft.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FormCraft.Infrastructure.Persistance.Migrations
 {
     [DbContext(typeof(FormCraftDbContext))]
-    partial class FormCraftDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250713205708_add_version_to_question")]
+    partial class add_version_to_question
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
