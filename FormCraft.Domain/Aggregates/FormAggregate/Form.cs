@@ -144,6 +144,9 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             if (!UserIsAuthorOrAdmin(currentUserService))
                 throw new ArgumentException("User not author or admin");
 
+            if (_questions.Count <= 1)
+                throw new ArgumentException("Cannot remove the last question from the form.");
+
             var question = _questions.FirstOrDefault(q => q.Id == questionId);
             if (question != null)
             {
