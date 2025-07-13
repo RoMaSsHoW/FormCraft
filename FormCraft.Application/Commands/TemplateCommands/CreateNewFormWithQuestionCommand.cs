@@ -9,5 +9,5 @@ namespace FormCraft.Application.Commands.Template
         string Topic,
         IEnumerable<string> Tags,
         IEnumerable<QuestionDTO> Questions,
-        bool IsPublic = true) : ICommand;
+        bool IsPublic) : ICommand;
 }

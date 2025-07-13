@@ -53,9 +53,22 @@ namespace FormCraft.API.Controllers
 
         [HttpPut("updateTemplate")]
         public async Task<IActionResult> Update(
-            [FromBody] TemplateRequest newTemplateInformation)
+            [FromQuery] Guid formId,
+            [FromQuery] string? title,
+            [FromQuery] string? description,
+            [FromQuery] string? topic,
+            [FromQuery] IEnumerable<string> tags,
+            [FromBody] IEnumerable<QuestionRequest> questions,
+            [FromQuery] bool isPublic = true)
         {
-            var command = new UpdateFormWithQuestionCommand(newTemplateInformation);
+            var command = new UpdateFormWithQuestionCommand(
+                formId,
+                title,
+                description,
+                topic,
+                isPublic,
+                tags,
+                questions);
             await Mediator.Send(command);
             return Ok();
         }
