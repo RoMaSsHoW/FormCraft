@@ -35,35 +35,50 @@ namespace FormCraft.Application.Commands.FormCommands
             var question = await _questionRepository.FindByIdAsync(request.AnswerRequest.QuestionId);
             var userDetails = GetUserDetails();
 
-            Answer answer;
+            Answer answer = null!;
 
             if (question.Type == QuestionType.Text)
             {
                 answer = TextAnswer.Create(
                     userDetails.UserId,
                     request.AnswerRequest.QuestionId,
-                    request.AnswerRequest.TeaxtValue!);
+                    request.AnswerRequest.AnswerValue);
             }
             else if (question.Type == QuestionType.Number)
             {
-                answer = NumberAnswer.Create(
-                    userDetails.UserId,
-                    request.AnswerRequest.QuestionId,
-                    (int)request.AnswerRequest.NumberValue!);
+                if (int.TryParse(request.AnswerRequest.AnswerValue, out var numberValue))
+                {
+                    answer = NumberAnswer.Create(
+                        userDetails.UserId,
+                        request.AnswerRequest.QuestionId,
+                        numberValue);
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid number format for AnswerValue");
+                }
             }
             else if (question.Type == QuestionType.Boolean)
             {
-                answer = BooleanAnswer.Create(
-                    userDetails.UserId,
-                    request.AnswerRequest.QuestionId,
-                    (bool)request.AnswerRequest.BooleanValue!);
+                if (bool.TryParse(request.AnswerRequest.AnswerValue, out var bolleanValue))
+                {
+                    answer = BooleanAnswer.Create(
+                        userDetails.UserId,
+                        request.AnswerRequest.QuestionId,
+                        bolleanValue);
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid bollean format for AnswerValue");
+                }
             }
             else
             {
                 throw new ArgumentException("Unsupported question type");
             }
 
-            await _answerRepository.AddAsync(answer);
+            question.SetAnswer(answer);
+
             await _unitOfWork.CommitAsync();
         }
 
