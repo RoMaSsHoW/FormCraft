@@ -1,4 +1,5 @@
-﻿using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
+﻿using FormCraft.Domain.Aggregates.FormAggregate.Answers;
+using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
 using FormCraft.Domain.Common;
@@ -111,15 +112,37 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             OrderNumber = order;
         }
 
-        public void SetAnswer(Answer answer)
+        public void SetAnswer(string answerValue, Guid userId)
         {
-            if (answer == null)
-                throw new ArgumentNullException("Answer cannot be null");
-
-            if (answer.Type != Type)
-                throw new ArgumentException("Answer must be of type Question");
-
+            var answer = CreateAnswer(answerValue, userId);
             _answers.Add(answer);
+        }
+
+        private Answer CreateAnswer(string answerValue, Guid userId)
+        {
+            return Type switch
+            {
+                var t when t == QuestionType.Text => TextAnswer.Create(userId, Id, answerValue),
+                var t when t == QuestionType.Number => CreateNumberAnswer(answerValue, userId),
+                var t when t == QuestionType.Boolean => CreateBooleanAnswer(answerValue, userId),
+                _ => throw new ArgumentException("Unsupported question type")
+            };
+        }
+
+        private NumberAnswer CreateNumberAnswer(string answerValue, Guid userId)
+        {
+            if (!int.TryParse(answerValue, out var numberValue))
+                throw new ArgumentException("Invalid number format for AnswerValue");
+
+            return NumberAnswer.Create(userId, Id, numberValue);
+        }
+
+        private BooleanAnswer CreateBooleanAnswer(string answerValue, Guid userId)
+        {
+            if (!bool.TryParse(answerValue, out var booleanValue))
+                throw new ArgumentException("Invalid boolean format for AnswerValue");
+
+            return BooleanAnswer.Create(userId, Id, booleanValue);
         }
 
         private bool UserIsAuthorOrAdmin(ICurrentUserService currentUserService)
