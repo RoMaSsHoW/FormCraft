@@ -49,10 +49,10 @@ namespace FormCraft.Application.Commands.Template
 
         private (Guid UserId, Role UserRole) GetUserDetails()
         {
-            var userId = _currentUserService.GetUserId()!;
-            var userRole = Role.FromName<Role>(_currentUserService.GetRole()!);
+            var userId = _currentUserService.GetUserId();
+            var userRole = _currentUserService.GetRole();
 
-            return ((Guid)userId, userRole);
+            return (userId, userRole);
         }
 
         private async Task<IEnumerable<Form>> GetFormsToDeleteAsync(IEnumerable<Guid> formIds, (Guid UserId, Role UserRole) userDetails)

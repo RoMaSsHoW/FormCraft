@@ -82,7 +82,7 @@ namespace FormCraft.Application.Commands.Template
             var userId = _currentUserService.GetUserId();
 
             var form = Form.Create(
-                (Guid)userId!,
+                userId,
                 request.Title,
                 request.Description,
                 request.Topic,

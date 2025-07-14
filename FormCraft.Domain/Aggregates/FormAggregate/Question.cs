@@ -162,9 +162,9 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             var userId = currentUserService.GetUserId();
             var userRole = currentUserService.GetRole();
 
-            if (userId != Guid.Empty && !string.IsNullOrEmpty(userRole))
+            if (userId != Guid.Empty && userRole != null)
             {
-                return userId == AuthorId || Role.FromName<Role>(userRole) == Role.Admin;
+                return userId == AuthorId || userRole == Role.Admin;
             }
 
             throw new UnauthorizedAccessException("User unauthorized");
@@ -175,9 +175,9 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             var userId = currentUserService.GetUserId();
             var userRole = currentUserService.GetRole();
 
-            if (userId != Guid.Empty && !string.IsNullOrEmpty(userRole))
+            if (userId != Guid.Empty && userRole != null)
             {
-                return userId == answer.AuthorId || Role.FromName<Role>(userRole) == Role.Admin;
+                return userId == answer.AuthorId || userRole == Role.Admin;
             }
 
             throw new UnauthorizedAccessException("User unauthorized");

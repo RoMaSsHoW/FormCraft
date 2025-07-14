@@ -25,7 +25,7 @@ namespace FormCraft.Application.Commands.FormCommands
         {
             ValidateRequest(request);
 
-            Guid userId = (Guid)_currentUserService.GetUserId()!;
+            Guid userId = _currentUserService.GetUserId();
 
             var question = await _questionRepository.FindByIdAsync(request.QuestionId);
 

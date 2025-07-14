@@ -71,7 +71,7 @@ namespace FormCraft.Application.Queries.TemplateQueries
             {
                 var userId = _currentUserService.GetUserId();
                 var userRole = _currentUserService.GetRole();
-                var isAdmin = Domain.Common.Enumeration.FromName<Role>(userRole) == Role.Admin;
+                var isAdmin = userRole == Role.Admin;
 
                 if (!isAdmin)
                 {

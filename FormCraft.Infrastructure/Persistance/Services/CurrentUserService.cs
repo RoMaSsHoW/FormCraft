@@ -1,4 +1,5 @@
 ﻿using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
+using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 
@@ -13,15 +14,19 @@ namespace FormCraft.Infrastructure.Persistance.Services
             _accessor = accessor;
         }
 
-        public string? GetRole()
+        public Role GetRole()
         {
             if (!IsAuthenticated())
                 return null;
 
-            return _accessor.HttpContext?.User.FindFirst(ClaimTypes.Role)?.Value;
+            var userRole = _accessor.HttpContext?.User.FindFirst(ClaimTypes.Role)?.Value;
+            if (userRole == null)
+                return null;
+
+            return Role.FromName<Role>(userRole);
         }
 
-        public Guid? GetUserId()
+        public Guid GetUserId()
         {
             if (!IsAuthenticated())
                 return Guid.Empty;
