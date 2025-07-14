@@ -1,7 +1,8 @@
 ﻿using FormCraft.Application.Common.Messaging;
-using FormCraft.Application.Models.RequestModels;
 
 namespace FormCraft.Application.Commands.FormCommands
 {
-    public record SetAnswerToQuestionCommand(AnswerRequest AnswerRequest) : ICommand;
+    public record SetAnswerToQuestionCommand(
+        Guid QuestionId,
+        string AnswerValue) : ICommand;
 }

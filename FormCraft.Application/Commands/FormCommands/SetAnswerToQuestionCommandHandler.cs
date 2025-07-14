@@ -27,9 +27,9 @@ namespace FormCraft.Application.Commands.FormCommands
 
             Guid userId = (Guid)_currentUserService.GetUserId()!;
 
-            var question = await _questionRepository.FindByIdAsync(request.AnswerRequest.QuestionId);
+            var question = await _questionRepository.FindByIdAsync(request.QuestionId);
 
-            question.SetAnswer(request.AnswerRequest.AnswerValue, userId);
+            question.SetAnswer(request.AnswerValue, userId);
 
             await _unitOfWork.CommitAsync();
         }

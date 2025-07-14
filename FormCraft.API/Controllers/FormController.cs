@@ -12,9 +12,11 @@ namespace FormCraft.API.Controllers
         }
 
         [HttpPost("setAnswerToQuestion")]
-        public async Task<IActionResult> SetAnswer([FromForm] AnswerRequest answerRequest)
+        public async Task<IActionResult> SetAnswer(
+            [FromQuery] Guid questionId,
+            [FromQuery] string answerValue)
         {
-            var command = new SetAnswerToQuestionCommand(answerRequest);
+            var command = new SetAnswerToQuestionCommand(questionId, answerValue);
             await Mediator.Send(command);
             return Ok();
         }
