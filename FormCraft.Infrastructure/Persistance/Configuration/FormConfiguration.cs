@@ -32,9 +32,6 @@ namespace FormCraft.Infrastructure.Persistance.Configuration
                 .HasColumnName("is_public")
                 .HasDefaultValue(true)
                 .IsRequired();
-            //builder.Property<uint>("xmin")
-            //    .IsRowVersion()
-            //    .HasColumnName("xmin");
             builder.Property(f => f.LastModified)
                 .HasColumnName("last_modified");
             builder.Property(f => f.CreationTime)
