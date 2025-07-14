@@ -62,7 +62,7 @@ namespace FormCraft.API.Controllers
             [FromBody] IEnumerable<QuestionRequest> questions,
             [FromQuery] bool isPublic = true)
         {
-            var command = new UpdateFormWithQuestionCommand(
+            var command = new EditFormWithQuestionCommand(
                 formId,
                 title,
                 description,

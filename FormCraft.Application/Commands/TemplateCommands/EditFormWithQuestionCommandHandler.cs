@@ -7,7 +7,7 @@ using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 
 namespace FormCraft.Application.Commands.Template
 {
-    public class UpdateFormWithQuestionCommandHandler : ICommandHandler<UpdateFormWithQuestionCommand>
+    public class EditFormWithQuestionCommandHandler : ICommandHandler<EditFormWithQuestionCommand>
     {
         private readonly IFormRepository _formRepository;
         private readonly ITagRepository _tagRepository;
@@ -15,7 +15,7 @@ namespace FormCraft.Application.Commands.Template
         private readonly ICurrentUserService _currentUserService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public UpdateFormWithQuestionCommandHandler(
+        public EditFormWithQuestionCommandHandler(
             IFormRepository formRepository,
             ITagRepository tagRepository,
             ITopicExistenceChecker topicExisteceChecker,
@@ -29,7 +29,7 @@ namespace FormCraft.Application.Commands.Template
             _unitOfWork = unitOfWork;
         }
 
-        public async Task Handle(UpdateFormWithQuestionCommand request, CancellationToken cancellationToken)
+        public async Task Handle(EditFormWithQuestionCommand request, CancellationToken cancellationToken)
         {
             var form = await ValidateRequest(request);
 
@@ -53,7 +53,7 @@ namespace FormCraft.Application.Commands.Template
             //await _unitOfWork.CommitAsync();
         }
 
-        private async Task<Form> ValidateRequest(UpdateFormWithQuestionCommand request)
+        private async Task<Form> ValidateRequest(EditFormWithQuestionCommand request)
         {
             if (!_currentUserService.IsAuthenticated())
                 throw new UnauthorizedAccessException("User unauthorized");
@@ -94,7 +94,7 @@ namespace FormCraft.Application.Commands.Template
             return tags;
         }
 
-        private async Task<Form> ChangeFormAsync(Form form, UpdateFormWithQuestionCommand request)
+        private async Task<Form> ChangeFormAsync(Form form, EditFormWithQuestionCommand request)
         {
             if (!string.IsNullOrWhiteSpace(request.Title))
                 form.ChangeTitle(request.Title, _currentUserService);
@@ -116,7 +116,7 @@ namespace FormCraft.Application.Commands.Template
             return form;
         }
 
-        private void CreateNewQuestions(Form form, UpdateFormWithQuestionCommand request)
+        private void CreateNewQuestions(Form form, EditFormWithQuestionCommand request)
         {
             foreach (var question in request.Questions.Where(q => q.Id == null))
             {
@@ -126,7 +126,7 @@ namespace FormCraft.Application.Commands.Template
             }
         }
 
-        private void ChangeQuestions(Form form, UpdateFormWithQuestionCommand request)
+        private void ChangeQuestions(Form form, EditFormWithQuestionCommand request)
         {
             var questionList = request.Questions.ToList();
             for (var i = 0; i < questionList.Count; i++)

@@ -3,7 +3,7 @@ using FormCraft.Application.Models.RequestModels;
 
 namespace FormCraft.Application.Commands.Template
 {
-    public record UpdateFormWithQuestionCommand(
+    public record EditFormWithQuestionCommand(
         Guid FormId,
         string? Title,
         string? Description,

@@ -106,7 +106,7 @@ namespace FormCraft.API.Extentions
             {
                 mc.RegisterServicesFromAssemblies(
                     typeof(CreateNewFormWithQuestionCommand).Assembly,
-                    typeof(UpdateFormWithQuestionCommand).Assembly,
+                    typeof(EditFormWithQuestionCommand).Assembly,
                     typeof(DeleteFormsCommand).Assembly,
                     typeof(DeleteQuestionsOrTagsFromFormCommand).Assembly,
                     typeof(SetAnswerToQuestionCommand).Assembly,
