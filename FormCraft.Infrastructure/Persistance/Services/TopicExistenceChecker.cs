@@ -5,6 +5,7 @@ namespace FormCraft.Infrastructure.Persistance.Services
     public class TopicExistenceChecker : ITopicExistenceChecker
     {
         private readonly ITopicRepository _topicRepository;
+
         public TopicExistenceChecker(ITopicRepository topicRepository)
         {
             _topicRepository = topicRepository;
