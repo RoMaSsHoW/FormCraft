@@ -4,16 +4,16 @@ namespace FormCraft.Application.Models.ViewModels
 {
     public class TemplateView
     {
-        public Guid FormId { get; set; }
-        public Guid AuthorId { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public string TopicName { get; set; }
-        public bool IsPublic { get; set; }
-        public DateTime CreationTime { get; set; }
-        public DateTime LastModified { get; set; }
-        public uint Xmin { get; set; }
-        public List<Tag> Tags { get; set; }
-        public List<QuestionView> Questions { get; set; }
+        public Guid FormId { get; init; } = Guid.Empty;
+        public Guid AuthorId { get; init; } = Guid.Empty;
+        public string Title { get; init; } = string.Empty;
+        public string Description { get; init; } = string.Empty;
+        public string TopicName { get; init; } = string.Empty;
+        public bool IsPublic { get; init; }
+        public DateTime CreationTime { get; init; }
+        public DateTime LastModified { get; init; }
+        public uint Xmin { get; init; }
+        public List<Tag> Tags { get; init; } = new List<Tag>();
+        public List<QuestionView> Questions { get; init; } = new List<QuestionView>();
     }
 }
