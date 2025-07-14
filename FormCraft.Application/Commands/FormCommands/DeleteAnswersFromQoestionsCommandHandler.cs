@@ -1,5 +1,6 @@
 ﻿using FormCraft.Application.Common.Messaging;
 using FormCraft.Application.Common.Persistance;
+using FormCraft.Application.Models.RequestModels;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 
@@ -25,17 +26,8 @@ namespace FormCraft.Application.Commands.FormCommands
         {
             ValidateRequest(request);
 
-            foreach (var answerToDeleteRequest in request.AnswersToDeleteRequest)
-            {
-                var question = await _questionRepository.FindByIdAsync(answerToDeleteRequest.QuestionId);
-                if (question == null)
-                    throw new ArgumentException($"Question with ID {answerToDeleteRequest.QuestionId} not found.");
-
-                foreach (var answerId in answerToDeleteRequest.AnswerIds)
-                {
-                    question.RemoveAnswer(answerId, _currentUserService);
-                }
-            }
+            foreach (var answerToDeleteRequest in request.AnswersToDelete)
+                await DeletingAnswers(answerToDeleteRequest);
 
             await _unitOfWork.CommitAsync();
         }
@@ -44,6 +36,16 @@ namespace FormCraft.Application.Commands.FormCommands
         {
             if (!_currentUserService.IsAuthenticated())
                 throw new UnauthorizedAccessException("User unauthorized");
+        }
+
+        private async Task DeletingAnswers(AnswersToDeleteRequestModel request)
+        {
+            var question = await _questionRepository.FindByIdAsync(request.QuestionId);
+            if (question == null)
+                throw new KeyNotFoundException($"Question with ID {request.QuestionId} not found.");
+
+            foreach (var answerId in request.AnswerIds)
+                question.RemoveAnswer(answerId, _currentUserService);
         }
     }
 }
