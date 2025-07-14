@@ -1,6 +1,5 @@
 ﻿using FormCraft.Domain.Aggregates.FormAggregate;
 using FormCraft.Domain.Aggregates.FormAggregate.Answers;
-using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,6 +12,8 @@ namespace FormCraft.Infrastructure.Persistance.Configuration
             builder.ToTable("answer");
             builder.HasKey(a => a.Id);
 
+            builder.Property(a => a.Id)
+               .ValueGeneratedNever();
             builder.Property(a => a.QuestionId)
                 .HasColumnName("question_id")
                 .IsRequired();

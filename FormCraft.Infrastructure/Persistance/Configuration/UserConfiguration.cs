@@ -12,6 +12,8 @@ namespace FormCraft.Infrastructure.Persistance.Configuration
             builder.ToTable("user");
             builder.HasKey(u => u.Id);
 
+            builder.Property(u => u.Id)
+               .ValueGeneratedNever();
             builder.Property(u => u.Name)
                 .HasColumnName("name")
                 .HasMaxLength(255)
@@ -40,7 +42,7 @@ namespace FormCraft.Infrastructure.Persistance.Configuration
                 name => Role.FromName<Role>(name))
                 .HasColumnName("role")
                 .IsRequired();
-                
+
             builder.Property(u => u.RefreshToken)
                 .HasColumnName("refresh_token")
                 .IsRequired();
