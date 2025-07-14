@@ -36,7 +36,6 @@ namespace FormCraft.Application.Queries
                     f.is_public AS IsPublic,
                     f.last_modified AS LastModified,
                     f.creation_time AS CreationTime,
-                    f.version AS Version,
                     t.""Id"" AS Id,
                     t.name AS Name,
                     q.""Id"" AS Id,
@@ -71,7 +70,6 @@ namespace FormCraft.Application.Queries
                             IsPublic = form.IsPublic,
                             LastModified = form.LastModified,
                             CreationTime = form.CreationTime,
-                            Version = form.Version,
                             Tags = new List<Tag>(),
                             Questions = new List<QuestionView>()
                         };

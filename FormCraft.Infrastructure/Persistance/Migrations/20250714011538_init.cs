@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FormCraft.Infrastructure.Persistance.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -23,7 +23,8 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                     topic_name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     is_public = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
                     last_modified = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    creation_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    creation_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {

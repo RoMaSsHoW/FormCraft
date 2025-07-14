@@ -11,6 +11,8 @@ namespace FormCraft.Infrastructure.Persistance.Configuration
             builder.ToTable("form");
             builder.HasKey(f => f.Id);
 
+            builder.Property(f => f.Id)
+                .ValueGeneratedNever();
             builder.Property(f => f.AuthorId)
                 .HasColumnName("author_id")
                 .IsRequired();
@@ -30,9 +32,9 @@ namespace FormCraft.Infrastructure.Persistance.Configuration
                 .HasColumnName("is_public")
                 .HasDefaultValue(true)
                 .IsRequired();
-            builder.Property(f => f.Version)
-                .HasColumnName("version")
-                .IsConcurrencyToken();
+            //builder.Property<uint>("xmin")
+            //    .IsRowVersion()
+            //    .HasColumnName("xmin");
             builder.Property(f => f.LastModified)
                 .HasColumnName("last_modified");
             builder.Property(f => f.CreationTime)

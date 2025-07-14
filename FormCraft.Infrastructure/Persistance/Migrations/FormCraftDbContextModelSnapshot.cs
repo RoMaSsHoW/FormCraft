@@ -55,7 +55,6 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
             modelBuilder.Entity("FormCraft.Domain.Aggregates.FormAggregate.Form", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("AuthorId")
@@ -94,10 +93,11 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("topic_name");
 
-                    b.Property<long>("Version")
+                    b.Property<uint>("Xmin")
                         .IsConcurrencyToken()
-                        .HasColumnType("bigint")
-                        .HasColumnName("version");
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -111,7 +111,6 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
             modelBuilder.Entity("FormCraft.Domain.Aggregates.FormAggregate.Question", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("AuthorId")
@@ -136,11 +135,6 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("type");
-
-                    b.Property<long>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("bigint")
-                        .HasColumnName("version");
 
                     b.HasKey("Id");
 

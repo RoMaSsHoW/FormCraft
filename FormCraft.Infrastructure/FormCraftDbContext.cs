@@ -35,6 +35,11 @@ namespace FormCraft.Infrastructure
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new AnswerConfiguration());
 
+            modelBuilder.Entity<Form>()
+                .Property(f => f.Xmin)
+                .HasColumnName("xmin")
+                .IsRowVersion();
+
             modelBuilder.Entity<BooleanAnswer>()
                 .Property(a => a.Value)
                 .HasColumnName("boolean_value");

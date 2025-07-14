@@ -12,6 +12,8 @@ namespace FormCraft.Infrastructure.Persistance.Configuration
             builder.ToTable("question");
             builder.HasKey(q => q.Id);
 
+            builder.Property(q => q.Id)
+               .ValueGeneratedNever();
             builder.Property(q => q.AuthorId)
                 .HasColumnName("author_id")
                 .IsRequired();
@@ -33,9 +35,9 @@ namespace FormCraft.Infrastructure.Persistance.Configuration
             builder.Property(q => q.OrderNumber)
                 .HasColumnName("order_number")
                 .IsRequired();
-            builder.Property(q => q.Version)
-                .HasColumnName("version")
-                .IsConcurrencyToken();
+            //builder.Property(q => q.Version)
+            //    .HasColumnName("version")
+            //    .IsConcurrencyToken();
 
             builder.HasOne<Form>()
                 .WithMany(f => f.Questions)

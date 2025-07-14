@@ -12,7 +12,7 @@ namespace FormCraft.Application.Models.ViewModels
         public bool IsPublic { get; set; }
         public DateTime CreationTime { get; set; }
         public DateTime LastModified { get; set; }
-        public long Version { get; set; }
+        public uint Xmin { get; set; }
         public List<Tag> Tags { get; set; }
         public List<QuestionView> Questions { get; set; }
     }

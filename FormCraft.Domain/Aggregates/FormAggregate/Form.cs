@@ -3,6 +3,7 @@ using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
 using FormCraft.Domain.Common;
+using System.ComponentModel.DataAnnotations;
 
 namespace FormCraft.Domain.Aggregates.FormAggregate
 {
@@ -44,7 +45,6 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             TopicName = topic;
             IsPublic = isPublic;
             CreationTime = DateTime.UtcNow;
-            Version = 1;
 
             if (tags.Any())
                 foreach (var tag in tags)
@@ -60,7 +60,9 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
         public bool IsPublic { get; private set; }
         public DateTime LastModified { get; private set; }
         public DateTime CreationTime { get; private set; }
-        public long Version { get; private set; }
+
+        [Timestamp]
+        public uint Xmin { get; private set; }
 
         public static Form Create(
             Guid userId,
@@ -225,7 +227,6 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
                 throw new ArgumentException("User not author or admin");
 
             LastModified = DateTime.UtcNow;
-            Version++;
         }
     }
 }

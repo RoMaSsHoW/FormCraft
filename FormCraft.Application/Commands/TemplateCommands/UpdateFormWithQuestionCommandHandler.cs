@@ -4,7 +4,6 @@ using FormCraft.Domain.Aggregates.FormAggregate;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
-using System.Threading.Tasks;
 
 namespace FormCraft.Application.Commands.Template
 {
@@ -32,16 +31,29 @@ namespace FormCraft.Application.Commands.Template
 
         public async Task Handle(UpdateFormWithQuestionCommand request, CancellationToken cancellationToken)
         {
-            await ValidateRequest(request);
+            var form = await ValidateRequest(request);
 
-            var form = await ChangeFormAsync(request);
+            if (form.Xmin != request.LastVersion)
+                throw new ArgumentException("Form has been modified by another user. Please refresh and try again.");
+
+            form = await ChangeFormAsync(form, request);
+
+            CreateNewQuestions(form, request);
+
+            await _unitOfWork.CommitAsync();
 
             ChangeQuestions(form, request);
 
+            form.SetLastModifiedNow(_currentUserService);
+
             await _unitOfWork.CommitAsync();
+
+            //ChangeQuestions(form, request);
+
+            //await _unitOfWork.CommitAsync();
         }
 
-        private async Task ValidateRequest(UpdateFormWithQuestionCommand request)
+        private async Task<Form> ValidateRequest(UpdateFormWithQuestionCommand request)
         {
             if (!_currentUserService.IsAuthenticated())
                 throw new UnauthorizedAccessException("User unauthorized");
@@ -54,11 +66,10 @@ namespace FormCraft.Application.Commands.Template
             if (form == null)
                 throw new ArgumentException("Form not found");
 
-            if (form.Version != request.LastVersion)
-                throw new Exception("Concurrency conflict: The form has been modified by another user.");
-
             if (!request.Questions.Any())
                 throw new ArgumentException("Question list cannot be null");
+
+            return form;
         }
 
         private async Task<IEnumerable<Tag>> GetOrCreateTagsAsync(IEnumerable<string> tagNames)
@@ -83,38 +94,48 @@ namespace FormCraft.Application.Commands.Template
             return tags;
         }
 
-        private async Task<Form> ChangeFormAsync(UpdateFormWithQuestionCommand request)
+        private async Task<Form> ChangeFormAsync(Form form, UpdateFormWithQuestionCommand request)
         {
-            var existingForm = await _formRepository.FindByIdAsync(request.FormId);
-
             if (!string.IsNullOrWhiteSpace(request.Title))
-                existingForm.ChangeTitle(request.Title, _currentUserService);
+                form.ChangeTitle(request.Title, _currentUserService);
 
             if (!string.IsNullOrWhiteSpace(request.Description))
-                existingForm.ChangeDescription(request.Description, _currentUserService);
+                form.ChangeDescription(request.Description, _currentUserService);
 
             if (!string.IsNullOrWhiteSpace(request.TopicName))
-                existingForm.ChangeTopic(request.TopicName, _topicExisteceChecker, _currentUserService);
+                form.ChangeTopic(request.TopicName, _topicExisteceChecker, _currentUserService);
 
-            existingForm.ChangeVisibility(request.IsPublic, _currentUserService);
+            form.ChangeVisibility(request.IsPublic, _currentUserService);
 
             var tags = await GetOrCreateTagsAsync(request.Tags);
 
             if (tags.Any())
                 foreach (var tag in tags)
-                    existingForm.AddTag(tag, _currentUserService);
+                    form.AddTag(tag, _currentUserService);
 
-            existingForm.SetLastModifiedNow(_currentUserService);
+            return form;
+        }
 
-            return existingForm;
+        private void CreateNewQuestions(Form form, UpdateFormWithQuestionCommand request)
+        {
+            foreach (var question in request.Questions.Where(q => q.Id == null))
+            {
+                form.AddQuestion(question.Text, question.Type, _currentUserService);
+                var lastQuestion = form.Questions.Last(q => q.Text == question.Text && q.Type == QuestionType.FromName<QuestionType>(question.Type));
+                question.Id = lastQuestion.Id;
+            }
         }
 
         private void ChangeQuestions(Form form, UpdateFormWithQuestionCommand request)
         {
-            for (var i = 0; i < request.Questions.Count(); i++)
+            var questionList = request.Questions.ToList();
+            for (var i = 0; i < questionList.Count; i++)
             {
-                var question = request.Questions.ToList()[i];
+                var question = questionList[i];
                 var existenceQuestion = form.Questions.First(q => q.Id == question.Id);
+                if (existenceQuestion == null)
+                    throw new ArgumentException($"Question with ID {question.Id} not found in the form.");
+
                 existenceQuestion.ChangeText(question.Text, _currentUserService);
                 existenceQuestion.ChangeType(question.Type, _currentUserService);
                 existenceQuestion.ChangeOrderNumber(i + 1, _currentUserService);
