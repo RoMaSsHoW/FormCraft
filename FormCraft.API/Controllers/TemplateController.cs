@@ -75,16 +75,6 @@ namespace FormCraft.API.Controllers
             return Ok();
         }
 
-        [HttpPut("addQuestionsToTemplate")]
-        public async Task<IActionResult> AddQuestions(
-            [FromQuery] Guid FormId,
-            [FromBody] IEnumerable<QuestionRequest> Questions)
-        {
-            var command = new AddQuestionsToFormCommand(FormId, Questions);
-            await Mediator.Send(command);
-            return Ok();
-        }
-
         [HttpDelete("deleteQuestionsOrTagsFromTemplate")]
         public async Task<IActionResult> DeleteQuestionsOrTags(
             [FromQuery] Guid FormId,

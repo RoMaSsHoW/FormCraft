@@ -108,7 +108,6 @@ namespace FormCraft.API.Extentions
                     typeof(CreateNewFormWithQuestionCommand).Assembly,
                     typeof(UpdateFormWithQuestionCommand).Assembly,
                     typeof(DeleteFormsCommand).Assembly,
-                    typeof(AddQuestionsToFormCommand).Assembly,
                     typeof(DeleteQuestionsOrTagsFromFormCommand).Assembly,
                     typeof(SetAnswerToQuestionCommand).Assembly,
                     typeof(GetAllTemplatesQuery).Assembly,
