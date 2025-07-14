@@ -4,16 +4,17 @@ using FormCraft.Application.Models.ViewModels;
 using FormCraft.Domain.Aggregates.FormAggregate;
 using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
+using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
 using System.Data;
 
-namespace FormCraft.Application.Queries
+namespace FormCraft.Application.Queries.TemplateQueries
 {
-    public class GetTemplateQueryHandler : IQueryHandler<GetTemplateQuery, TemplateView>
+    public class GetAllTemplatesQueryHandler : IQueryHandler<GetAllTemplatesQuery, IEnumerable<TemplateView>>
     {
         private readonly IDbConnection _dbCconnection;
         private readonly ICurrentUserService _currentUserService;
 
-        public GetTemplateQueryHandler(
+        public GetAllTemplatesQueryHandler(
             IDbConnection dbCconnection,
             ICurrentUserService currentUserService)
         {
@@ -21,12 +22,9 @@ namespace FormCraft.Application.Queries
             _currentUserService = currentUserService;
         }
 
-        public async Task<TemplateView> Handle(GetTemplateQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TemplateView>> Handle(GetAllTemplatesQuery request, CancellationToken cancellationToken)
         {
-            if (!_currentUserService.IsAuthenticated())
-                throw new UnauthorizedAccessException("User unauthorized");
-
-            const string sql = @"
+            var sql = @"
                 SELECT
                     f.""Id"" AS Id,
                     f.author_id AS AuthorId,
@@ -47,13 +45,48 @@ namespace FormCraft.Application.Queries
                 LEFT JOIN form_tag ft ON f.""Id"" = ft.form_id
                 LEFT JOIN tag t ON ft.tag_id = t.""Id""
                 INNER JOIN  question q ON f.""Id"" = q.form_id
-                WHERE f.""Id"" = @TemplateId
-                order by f.""Id"", q.order_number;";
-            var formDic = new Dictionary<Guid, TemplateView>();
-            var parameters = new
+                WHERE 1 = 1";
+
+            var parameters = new DynamicParameters();
+
+            if (!string.IsNullOrWhiteSpace(request.TagName))
             {
-                TemplateId = request.TemplateId
-            };
+                sql += " AND t.name ILIKE @TagName";
+                parameters.Add("TagName", $"%{request.TagName}%");
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.TopicName))
+            {
+                sql += " AND f.topic_name ILIKE @TopicName";
+                parameters.Add("TopicName", $"%{request.TopicName}%");
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.TitleSearch))
+            {
+                sql += " AND f.title ILIKE @TitleSearch";
+                parameters.Add("TitleSearch", $"%{request.TitleSearch}%");
+            }
+
+            if (_currentUserService.IsAuthenticated())
+            {
+                var userId = _currentUserService.GetUserId();
+                var userRole = _currentUserService.GetRole();
+                var isAdmin = Domain.Common.Enumeration.FromName<Role>(userRole) == Role.Admin;
+
+                if (!isAdmin)
+                {
+                    sql += " AND (f.is_public = true OR f.author_id = @UserId)";
+                    parameters.Add("UserId", userId);
+                }
+            }
+            else
+            {
+                sql += " AND f.is_public = true";
+            }
+
+            sql += @" ORDER BY f.""Id"", q.order_number;";
+
+            var formDic = new Dictionary<Guid, TemplateView>();
 
             var result = await _dbCconnection.QueryAsync<Form, Tag, QuestionView, TemplateView>(
                 sql,
@@ -93,10 +126,10 @@ namespace FormCraft.Application.Queries
                     }
                     return formView;
                 },
-                param: parameters,
+                parameters,
                 splitOn: "Id,Id");
 
-            return formDic.Values.FirstOrDefault();
+            return formDic.Values;
         }
     }
 }

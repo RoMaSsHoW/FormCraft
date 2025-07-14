@@ -3,7 +3,7 @@ using FormCraft.Application.Commands.Template;
 using FormCraft.Application.Commands.TemplateCommands;
 using FormCraft.Application.Common.Persistance;
 using FormCraft.Application.Models.DTO;
-using FormCraft.Application.Queries;
+using FormCraft.Application.Queries.TemplateQueries;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using FormCraft.Infrastructure.Persistance;

@@ -2,7 +2,7 @@
 using FormCraft.Application.Commands.TemplateCommands;
 using FormCraft.Application.Models.RequestModels;
 using FormCraft.Application.Models.ViewModels;
-using FormCraft.Application.Queries;
+using FormCraft.Application.Queries.TemplateQueries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
