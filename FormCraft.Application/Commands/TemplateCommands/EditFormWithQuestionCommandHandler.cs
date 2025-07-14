@@ -33,24 +33,15 @@ namespace FormCraft.Application.Commands.Template
         {
             var form = await ValidateRequest(request);
 
-            if (form.Xmin != request.LastVersion)
-                throw new ArgumentException("Form has been modified by another user. Please refresh and try again.");
-
             form = await ChangeFormAsync(form, request);
 
             CreateNewQuestions(form, request);
-
-            await _unitOfWork.CommitAsync();
 
             ChangeQuestions(form, request);
 
             form.SetLastModifiedNow(_currentUserService);
 
             await _unitOfWork.CommitAsync();
-
-            //ChangeQuestions(form, request);
-
-            //await _unitOfWork.CommitAsync();
         }
 
         private async Task<Form> ValidateRequest(EditFormWithQuestionCommand request)
@@ -65,6 +56,9 @@ namespace FormCraft.Application.Commands.Template
             var form = await _formRepository.FindByIdAsync(request.FormId);
             if (form == null)
                 throw new ArgumentException("Form not found");
+
+            if (form.Xmin != request.LastVersion)
+                throw new ArgumentException("Form has been modified by another user. Please refresh and try again.");
 
             if (!request.Questions.Any())
                 throw new ArgumentException("Question list cannot be null");
