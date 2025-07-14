@@ -118,6 +118,18 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             _answers.Add(answer);
         }
 
+        public void RemoveAnswer(Guid answerId, ICurrentUserService currentUserService)
+        {
+            var answer = _answers.FirstOrDefault(a => a.Id == answerId);
+            if (answer == null)
+                throw new ArgumentException("Answer not found");
+
+            if (!UserIsAuthorOrAdmin(answer, currentUserService))
+                throw new ArgumentException("User not author or admin");
+
+            _answers.Remove(answer);
+        }
+
         private Answer CreateAnswer(string answerValue, Guid userId)
         {
             return Type switch
@@ -153,6 +165,19 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             if (userId != Guid.Empty && !string.IsNullOrEmpty(userRole))
             {
                 return userId == AuthorId || Role.FromName<Role>(userRole) == Role.Admin;
+            }
+
+            throw new UnauthorizedAccessException("User unauthorized");
+        }
+
+        private bool UserIsAuthorOrAdmin(Answer answer, ICurrentUserService currentUserService)
+        {
+            var userId = currentUserService.GetUserId();
+            var userRole = currentUserService.GetRole();
+
+            if (userId != Guid.Empty && !string.IsNullOrEmpty(userRole))
+            {
+                return userId == answer.AuthorId || Role.FromName<Role>(userRole) == Role.Admin;
             }
 
             throw new UnauthorizedAccessException("User unauthorized");

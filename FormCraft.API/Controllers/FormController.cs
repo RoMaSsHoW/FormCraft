@@ -18,5 +18,13 @@ namespace FormCraft.API.Controllers
             await Mediator.Send(command);
             return Ok();
         }
+
+        [HttpDelete("deleteAnswersFromQuestions")]
+        public async Task<IActionResult> DeleteAnswers(IEnumerable<AnswersToDeleteRequestModel> AnswersToDeleteRequest)
+        {
+            var command = new DeleteAnswersFromQoestionsCommand(AnswersToDeleteRequest);
+            await Mediator.Send(command);
+            return Ok();
+        }
     }
 }
