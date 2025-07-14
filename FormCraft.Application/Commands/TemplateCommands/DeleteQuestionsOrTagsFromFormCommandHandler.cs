@@ -28,18 +28,22 @@ namespace FormCraft.Application.Commands.TemplateCommands
             var form = await _formRepository.FindByIdAsync(request.FormId);
 
             if (request.QuestionIds.Any())
+            {
                 foreach (var questionId in request.QuestionIds)
                 {
                     form.RemoveQuestion(questionId, _currentUserService);
-                    form.SetLastModifiedNow(_currentUserService);
                 }
+                form.SetLastModifiedNow(_currentUserService);
+            }
 
             if (request.TagIds.Any())
+            {
                 foreach (var tagId in request.TagIds)
                 {
                     form.RemoveTag(tagId, _currentUserService);
-                    form.SetLastModifiedNow(_currentUserService);
                 }
+                form.SetLastModifiedNow(_currentUserService);
+            }
 
             await _unitOfWork.CommitAsync();
         }
