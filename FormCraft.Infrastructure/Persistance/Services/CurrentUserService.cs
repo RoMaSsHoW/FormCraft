@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 
-namespace FormCraft.Application.Services
+namespace FormCraft.Infrastructure.Persistance.Services
 {
     public class CurrentUserService : ICurrentUserService
     {

@@ -1,6 +1,6 @@
 ﻿using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 
-namespace FormCraft.Application.Services
+namespace FormCraft.Infrastructure.Persistance.Services
 {
     public class TopicExistenceChecker : ITopicExistenceChecker
     {

@@ -8,7 +8,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace FormCraft.Application.Services
+namespace FormCraft.Infrastructure.Persistance.Services
 {
     public class TokenService : ITokenService
     {
