@@ -1,5 +1,4 @@
-﻿using FormCraft.Application.Intefaces;
-using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
+﻿using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 

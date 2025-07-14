@@ -1,6 +1,6 @@
 ﻿using FormCraft.Domain.Aggregates.UserAggregate;
 
-namespace FormCraft.Application.Intefaces
+namespace FormCraft.Application.Common.Persistance
 {
     public interface ITokenService
     {

@@ -2,7 +2,6 @@
 using FormCraft.Application.Commands.Template;
 using FormCraft.Application.Commands.TemplateCommands;
 using FormCraft.Application.Common.Persistance;
-using FormCraft.Application.Intefaces;
 using FormCraft.Application.Models.DTO;
 using FormCraft.Application.Queries;
 using FormCraft.Application.Services;
@@ -42,7 +41,7 @@ namespace FormCraft.API.Extentions
 
         private static void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<ITokenService, TokenService>(); 
+            services.AddSingleton<ITokenService, TokenService>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
