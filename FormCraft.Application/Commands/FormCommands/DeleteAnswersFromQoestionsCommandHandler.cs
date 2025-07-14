@@ -26,8 +26,8 @@ namespace FormCraft.Application.Commands.FormCommands
         {
             ValidateRequest(request);
 
-            foreach (var answerToDeleteRequest in request.AnswersToDelete)
-                await DeletingAnswers(answerToDeleteRequest);
+            foreach (var answerToDelete in request.AnswersToDelete)
+                await DeletingAnswers(answerToDelete);
 
             await _unitOfWork.CommitAsync();
         }
