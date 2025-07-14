@@ -6,7 +6,6 @@ using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
 using System.Data;
-using System.Linq;
 
 namespace FormCraft.Application.Queries
 {
@@ -105,7 +104,7 @@ namespace FormCraft.Application.Queries
                             IsPublic = form.IsPublic,
                             LastModified = form.LastModified,
                             CreationTime = form.CreationTime,
-                            Xmin = form.Xmin,
+                            LastVersion = form.Xmin,
                             Tags = new List<Tag>(),
                             Questions = new List<QuestionView>()
                         };
