@@ -5,7 +5,7 @@ using FormCraft.Domain.Aggregates.UserAggregate;
 using FormCraft.Infrastructure.Persistance.Configuration;
 using Microsoft.EntityFrameworkCore;
 
-namespace FormCraft.Infrastructure
+namespace FormCraft.Infrastructure.Persistance
 {
     public class FormCraftDbContext : DbContext
     {

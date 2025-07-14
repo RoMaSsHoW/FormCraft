@@ -1,6 +1,6 @@
 ﻿using FormCraft.Application.Common.Persistance;
 
-namespace FormCraft.Infrastructure
+namespace FormCraft.Infrastructure.Persistance
 {
     public class UnitOfWork : IUnitOfWork
     {
