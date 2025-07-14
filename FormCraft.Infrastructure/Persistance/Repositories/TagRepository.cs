@@ -33,10 +33,5 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
         {
             await _dbContext.Tags.AddAsync(tag);
         }
-
-        public async Task CreateAsync(IEnumerable<Tag> tags)
-        {
-            await _dbContext.Tags.AddRangeAsync(tags);
-        }
     }
 }

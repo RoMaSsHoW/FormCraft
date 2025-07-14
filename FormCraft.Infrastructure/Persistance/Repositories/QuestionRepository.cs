@@ -21,32 +21,5 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
 
             return question;
         }
-
-        public async Task CreateAsync(Question question)
-        {
-            await _dbContext.Questions.AddAsync(question);
-        }
-
-        public async Task CreateAsync(IEnumerable<Question> questions)
-        {
-            await _dbContext.Questions.AddRangeAsync(questions);
-        }
-
-        public void Remove(IEnumerable<Question> questions)
-        {
-            if (questions.Any())
-            {
-                _dbContext.Questions.RemoveRange(questions);
-            }
-        }
-
-        public async Task<IEnumerable<Question>> FindQuestionsByIdAsync(IEnumerable<Guid> ids)
-        {
-            var questions = await _dbContext.Questions
-                .Where(q => ids.Contains(q.Id))
-                .Include(q => q.Answers)
-                .ToListAsync();
-            return questions;
-        }
     }
 }

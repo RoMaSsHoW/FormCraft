@@ -1,8 +1,6 @@
 ﻿using FormCraft.Domain.Aggregates.UserAggregate;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
-using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
 using Microsoft.EntityFrameworkCore;
-using System.Net.Mail;
 
 namespace FormCraft.Infrastructure.Persistance.Repositories
 {
@@ -52,7 +50,5 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
         {
             await _dbContext.Users.AddAsync(user);
         }
-
-        
     }
 }
