@@ -25,7 +25,6 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
             modelBuilder.Entity("FormCraft.Domain.Aggregates.FormAggregate.Answer", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("AuthorId")
@@ -172,7 +171,6 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
             modelBuilder.Entity("FormCraft.Domain.Aggregates.FormAggregate.ValueObjects.Tag", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
@@ -211,7 +209,6 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
             modelBuilder.Entity("FormCraft.Domain.Aggregates.UserAggregate.User", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FormCraft.Infrastructure.Persistance.Migrations
 {
     [DbContext(typeof(FormCraftDbContext))]
-    [Migration("20250714011538_init")]
+    [Migration("20250714014558_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -28,7 +28,6 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
             modelBuilder.Entity("FormCraft.Domain.Aggregates.FormAggregate.Answer", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("AuthorId")
@@ -175,7 +174,6 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
             modelBuilder.Entity("FormCraft.Domain.Aggregates.FormAggregate.ValueObjects.Tag", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
@@ -214,7 +212,6 @@ namespace FormCraft.Infrastructure.Persistance.Migrations
             modelBuilder.Entity("FormCraft.Domain.Aggregates.UserAggregate.User", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
