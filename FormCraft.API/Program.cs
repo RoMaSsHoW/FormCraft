@@ -1,3 +1,4 @@
+using FluentMigrator.Runner;
 using FormCraft.API.Extentions;
 using FormCraft.API.Middlewares;
 using Microsoft.OpenApi.Models;
@@ -48,6 +49,12 @@ builder.Services.AddSwaggerGen(opt =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
+    runner.MigrateUp();
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();

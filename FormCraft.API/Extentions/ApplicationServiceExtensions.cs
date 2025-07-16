@@ -1,4 +1,5 @@
-﻿using FormCraft.Application.Commands.FormCommands;
+﻿using FluentMigrator.Runner;
+using FormCraft.Application.Commands.FormCommands;
 using FormCraft.Application.Commands.Template;
 using FormCraft.Application.Commands.TemplateCommands;
 using FormCraft.Application.Common.Persistance;
@@ -7,6 +8,7 @@ using FormCraft.Application.Queries.TemplateQueries;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using FormCraft.Infrastructure.Persistance;
+using FormCraft.Infrastructure.Persistance.Migrations;
 using FormCraft.Infrastructure.Persistance.Repositories;
 using FormCraft.Infrastructure.Persistance.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -35,6 +37,8 @@ namespace FormCraft.API.Extentions
             ConfigureDbContext(services, configuration);
 
             ConfigureMediatR(services);
+
+            ConfigureFluentMigrator(services, configuration);
 
             return services;
         }
@@ -96,6 +100,16 @@ namespace FormCraft.API.Extentions
             {
                 return new NpgsqlConnection(configuration.GetConnectionString("PostgresqlDbConnection"));
             });
+        }
+
+        private static void ConfigureFluentMigrator(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddFluentMigratorCore()
+                .ConfigureRunner(runner => runner
+                    .AddPostgres()
+                    .WithGlobalConnectionString(configuration.GetConnectionString("PostgresqlDbConnection"))
+                    .ScanIn(typeof(InitialMigration).Assembly).For.Migrations())
+                .AddLogging(lb => lb.AddFluentMigratorConsole());
         }
 
         private static void ConfigureMediatR(IServiceCollection services)
