@@ -46,6 +46,8 @@ services:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt/live/form-craft.ddns.net/fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
+      - /etc/letsencrypt/live/form-craft.ddns.net/privkey.pem:/etc/ssl/private/privkey.pem:ro  
     networks:
       - app_network
     depends_on:
