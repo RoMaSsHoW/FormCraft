@@ -26,19 +26,8 @@ FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./FormCraft.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-## Этот этап используется в рабочей среде или при запуске из VS в обычном режиме (по умолчанию, когда конфигурация отладки не используется)
-#FROM base AS final
-#WORKDIR /app
-#COPY --from=publish /app/publish .
-#ENTRYPOINT ["dotnet", "FormCraft.API.dll"]
-
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS dev-final
+# Этот этап используется в рабочей среде или при запуске из VS в обычном режиме (по умолчанию, когда конфигурация отладки не используется)
+FROM base AS final
 WORKDIR /app
-
-# Устанавливаем dotnet-ef
-RUN dotnet tool install -g dotnet-ef
-ENV PATH="$PATH:/root/.dotnet/tools"
-
 COPY --from=publish /app/publish .
-
 ENTRYPOINT ["dotnet", "FormCraft.API.dll"]
