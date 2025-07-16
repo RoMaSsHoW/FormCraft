@@ -12,6 +12,12 @@ services:
     build:
       context: .
       dockerfile: FormCraft.API/Dockerfile
+    environment:
+      - JWTSettings__Key=${JWTSettings__Key}
+      - JWTSettings__Issuer=${JWTSettings__Issuer}
+      - JWTSettings__Audience=${JWTSettings__Audience}
+      - JWTSettings__ExpireTime=${JWTSettings__ExpireTime}
+      - ConnectionStrings__PostgresqlDbConnection=${ConnectionStrings__PostgresqlDbConnection}
     networks:
         - app_network
     depends_on:
