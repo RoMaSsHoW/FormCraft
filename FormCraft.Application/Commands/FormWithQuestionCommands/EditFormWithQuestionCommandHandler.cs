@@ -5,7 +5,7 @@ using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 
-namespace FormCraft.Application.Commands.Template
+namespace FormCraft.Application.Commands.FormWithQuestionCommands
 {
     public class EditFormWithQuestionCommandHandler : ICommandHandler<EditFormWithQuestionCommand>
     {

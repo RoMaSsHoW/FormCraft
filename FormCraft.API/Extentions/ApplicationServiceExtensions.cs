@@ -1,7 +1,6 @@
 ﻿using FluentMigrator.Runner;
-using FormCraft.Application.Commands.FormCommands;
-using FormCraft.Application.Commands.Template;
-using FormCraft.Application.Commands.TemplateCommands;
+using FormCraft.Application.Commands.FormWithAnswerCommands;
+using FormCraft.Application.Commands.FormWithQuestionCommands;
 using FormCraft.Application.Common.Persistance;
 using FormCraft.Application.Models.DTO;
 using FormCraft.Application.Queries.TemplateQueries;

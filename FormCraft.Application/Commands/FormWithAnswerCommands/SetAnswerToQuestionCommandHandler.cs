@@ -3,7 +3,7 @@ using FormCraft.Application.Common.Persistance;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 
-namespace FormCraft.Application.Commands.FormCommands
+namespace FormCraft.Application.Commands.FormWithAnswerCommands
 {
     public class SetAnswerToQuestionCommandHandler : ICommandHandler<SetAnswerToQuestionCommand>
     {

@@ -4,7 +4,7 @@ using FormCraft.Application.Models.RequestModels;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 
-namespace FormCraft.Application.Commands.FormCommands
+namespace FormCraft.Application.Commands.FormWithAnswerCommands
 {
     public class DeleteAnswersFromQoestionsCommandHandler : ICommandHandler<DeleteAnswersFromQoestionsCommand>
     {
