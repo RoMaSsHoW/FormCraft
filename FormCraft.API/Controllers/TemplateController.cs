@@ -1,7 +1,7 @@
 ﻿using FormCraft.Application.Commands.FormWithQuestionCommands;
 using FormCraft.Application.Models.RequestModels;
 using FormCraft.Application.Models.ViewModels;
-using FormCraft.Application.Queries.TemplateQueries;
+using FormCraft.Application.Queries.FormWithQuestionQueries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

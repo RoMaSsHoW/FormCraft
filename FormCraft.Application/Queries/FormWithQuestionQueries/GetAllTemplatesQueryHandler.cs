@@ -7,7 +7,7 @@ using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
 using System.Data;
 
-namespace FormCraft.Application.Queries.TemplateQueries
+namespace FormCraft.Application.Queries.FormWithQuestionQueries
 {
     public class GetAllTemplatesQueryHandler : IQueryHandler<GetAllTemplatesQuery, IEnumerable<TemplateView>>
     {
