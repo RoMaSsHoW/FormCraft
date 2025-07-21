@@ -4,6 +4,7 @@ networks:
 
 volumes:
   postgres_db_data:
+  minio_data:
 
 services:
   formcraft.api:
@@ -13,9 +14,9 @@ services:
       context: .
       dockerfile: FormCraft.API/Dockerfile
     networks:
-        - app_network
+      - app_network
     depends_on:
-        - postgres_db
+      - postgres_db
 
   postgres_db:
     image: postgres:latest
@@ -29,5 +30,35 @@ services:
       - "5432:5432"
     volumes:
       - postgres_db_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+  
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "9000:9000"   # S3 API
+      - "9090:9090"   # Web UI (Console)
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9090"
+    restart: unless-stopped
+    networks:
+      - app_network
+  
+  broker:
+    image: bitnami/rabbitmq:latest
+    container_name: form_craft_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_MANAGEMENT_ALLOW_WEB_ACCESS=true
+      - RABBITMQ_USERNAME=user
+      - RABBITMQ_PASSWORD=w6quaebXPwEMkHAO
+      - RABBITMQ_VHOST=/
     networks:
       - app_network
