@@ -13,18 +13,18 @@ namespace FormCraft.API.Controllers
 
         [HttpPost("setAnswerToQuestion")]
         public async Task<IActionResult> SetAnswer(
-            [FromQuery] Guid questionId,
-            [FromQuery] string answerValue)
+            IEnumerable<AnswerForSetToQuestionRequestModel> answerForSetToQuestionRequests)
         {
-            var command = new SetAnswerToQuestionCommand(questionId, answerValue);
+            var command = new SetAnswerToQuestionCommand(answerForSetToQuestionRequests);
             await Mediator.Send(command);
             return Ok();
         }
 
         [HttpDelete("deleteAnswersFromQuestions")]
-        public async Task<IActionResult> DeleteAnswers(IEnumerable<AnswersToDeleteRequestModel> AnswersToDeleteRequest)
+        public async Task<IActionResult> DeleteAnswers(
+            IEnumerable<AnswersToDeleteRequestModel> answersToDeleteRequest)
         {
-            var command = new DeleteAnswersFromQoestionsCommand(AnswersToDeleteRequest);
+            var command = new DeleteAnswersFromQoestionsCommand(answersToDeleteRequest);
             await Mediator.Send(command);
             return Ok();
         }

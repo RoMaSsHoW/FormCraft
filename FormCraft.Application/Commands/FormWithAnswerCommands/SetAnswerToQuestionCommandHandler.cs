@@ -1,5 +1,6 @@
 ﻿using FormCraft.Application.Common.Messaging;
 using FormCraft.Application.Common.Persistance;
+using FormCraft.Application.Models.RequestModels;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 
@@ -27,9 +28,8 @@ namespace FormCraft.Application.Commands.FormWithAnswerCommands
 
             Guid userId = _currentUserService.GetUserId();
 
-            var question = await _questionRepository.FindByIdAsync(request.QuestionId);
-
-            question.SetAnswer(request.AnswerValue, userId);
+            foreach (var answerRequest in request.AnswerForSetToQuestions)
+                await SetAnswerToQuestionAsync(answerRequest, userId);
 
             await _unitOfWork.CommitAsync();
         }
@@ -38,6 +38,13 @@ namespace FormCraft.Application.Commands.FormWithAnswerCommands
         {
             if (!_currentUserService.IsAuthenticated())
                 throw new UnauthorizedAccessException("User unauthorized");
+        }
+
+        private async Task SetAnswerToQuestionAsync(AnswerForSetToQuestionRequestModel request, Guid userId)
+        {
+            var question = await _questionRepository.FindByIdAsync(request.QuestionId);
+
+            question.SetAnswer(request.AnswerValue, userId);
         }
     }
 }
