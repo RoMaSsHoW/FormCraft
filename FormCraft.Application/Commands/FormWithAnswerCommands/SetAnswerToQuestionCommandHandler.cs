@@ -1,6 +1,5 @@
 ﻿using FormCraft.Application.Common.Messaging;
 using FormCraft.Application.Common.Persistance;
-using FormCraft.Application.Models.RequestModels;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 
@@ -8,16 +7,16 @@ namespace FormCraft.Application.Commands.FormWithAnswerCommands
 {
     public class SetAnswerToQuestionCommandHandler : ICommandHandler<SetAnswerToQuestionCommand>
     {
-        private readonly IQuestionRepository _questionRepository;
+        private readonly IFormRepository _formRepository;
         private readonly ICurrentUserService _currentUserService;
         private readonly IUnitOfWork _unitOfWork;
 
         public SetAnswerToQuestionCommandHandler(
-            IQuestionRepository questionRepository,
+            IFormRepository formRepository,
             ICurrentUserService currentUserService,
             IUnitOfWork unitOfWork)
         {
-            _questionRepository = questionRepository;
+            _formRepository = formRepository;
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
         }
@@ -28,8 +27,15 @@ namespace FormCraft.Application.Commands.FormWithAnswerCommands
 
             Guid userId = _currentUserService.GetUserId();
 
-            foreach (var answerRequest in request.AnswerForSetToQuestions)
-                await SetAnswerToQuestionAsync(answerRequest, userId);
+            var form = await _formRepository.FindByIdAsync(request.AnswerForSetToQuestion.FormId);
+
+            foreach (var value in request.AnswerForSetToQuestion.QuestionAnswerValues)
+            {
+                foreach (var question in form.Questions.Where(q => q.Id == value.QuestionId))
+                {
+                    question.SetAnswer(value.AnswerValue, userId);
+                }
+            }
 
             await _unitOfWork.CommitAsync();
         }
@@ -38,13 +44,6 @@ namespace FormCraft.Application.Commands.FormWithAnswerCommands
         {
             if (!_currentUserService.IsAuthenticated())
                 throw new UnauthorizedAccessException("User unauthorized");
-        }
-
-        private async Task SetAnswerToQuestionAsync(AnswerForSetToQuestionRequestModel request, Guid userId)
-        {
-            var question = await _questionRepository.FindByIdAsync(request.QuestionId);
-
-            question.SetAnswer(request.AnswerValue, userId);
         }
     }
 }
