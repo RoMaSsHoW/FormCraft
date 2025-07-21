@@ -27,13 +27,13 @@ namespace FormCraft.Application.Commands.FormWithAnswerCommands
 
             Guid userId = _currentUserService.GetUserId();
 
-            var form = await _formRepository.FindByIdAsync(request.AnswerForSetToQuestion.FormId);
+            var form = await _formRepository.FindByIdAsync(request.SetQuestionAnswer.FormId);
 
-            foreach (var value in request.AnswerForSetToQuestion.QuestionAnswerValues)
+            foreach (var pair in request.SetQuestionAnswer.QuestionAnswerValues)
             {
-                foreach (var question in form.Questions.Where(q => q.Id == value.QuestionId))
+                foreach (var question in form.Questions.Where(q => q.Id == pair.QuestionId))
                 {
-                    question.SetAnswer(value.AnswerValue, userId);
+                    question.SetAnswer(pair.AnswerValue, userId);
                 }
             }
 
