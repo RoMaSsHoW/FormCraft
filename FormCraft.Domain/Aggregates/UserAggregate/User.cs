@@ -17,13 +17,13 @@ namespace FormCraft.Domain.Aggregates.UserAggregate
             const int MaxTextLength = 255;
 
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentNullException("Name cannot be null or whitespace.");
+                throw new ArgumentException("Name cannot be null or whitespace.");
             if (name.Length > MaxTextLength)
                 throw new ArgumentException("Invalid name text length");
             if (string.IsNullOrWhiteSpace(role))
-                throw new ArgumentNullException("Role cannot be null or whitespace.");
+                throw new ArgumentException("Role cannot be null or whitespace.");
             if (string.IsNullOrWhiteSpace(refreshToken))
-                throw new ArgumentNullException("RefreshToken cannot be null or whitespace.");
+                throw new ArgumentException("RefreshToken cannot be null or whitespace.");
 
             Name = name;
             Email = new Email(email);
@@ -58,7 +58,7 @@ namespace FormCraft.Domain.Aggregates.UserAggregate
         public void ChangeRefreshToken(string refreshToken)
         {
             if (string.IsNullOrWhiteSpace(refreshToken))
-                throw new ArgumentNullException("RefreshToken cannot be null or whitespace.");
+                throw new ArgumentException("RefreshToken cannot be null or whitespace.");
 
             RefreshToken = refreshToken;
             RefreshTokenLastUpdated = DateTime.UtcNow;

@@ -1,17 +1,17 @@
-﻿using FormCraft.Application.Common.Persistance;
+﻿using FormCraft.Application.Commands.AuthCommands;
+using FormCraft.Application.Common.Persistance;
 using FormCraft.Application.Models.DTO;
 using FormCraft.Application.Models.RequestModels;
 using FormCraft.Application.Models.ViewModels;
 using FormCraft.Domain.Aggregates.UserAggregate;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
 namespace FormCraft.API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : BaseApiController
     {
         private readonly IUserRepository _userRepository;
         private readonly ITokenService _tokenService;
@@ -19,10 +19,11 @@ namespace FormCraft.API.Controllers
         private readonly JWTSettings _jwtSettings;
 
         public AuthController(
+            IMediator mediator,
             IUserRepository userRepository,
             ITokenService tokenService,
             IUnitOfWork unitOfWork,
-            IOptions<JWTSettings> jwtSettigs)
+            IOptions<JWTSettings> jwtSettigs) : base (mediator)
         {
             _userRepository = userRepository;
             _tokenService = tokenService;
@@ -33,23 +34,11 @@ namespace FormCraft.API.Controllers
         [HttpPost("registration")]
         public async Task<ActionResult> Registration([FromForm] RegisterRequest registerDTO)
         {
-            var refreshToken = _tokenService.GenerateRefreshToken();
-
             try
             {
-                var user = FormCraft.Domain.Aggregates.UserAggregate.User.Registr(
-                    registerDTO.Name,
-                    registerDTO.Email,
-                    registerDTO.Password,
-                    "User",
-                    refreshToken);
-
-                await _userRepository.AddAsync(user);
-                await _unitOfWork.CommitAsync();
-
-                var accessToken = _tokenService.GenerateAccessToken(user);
-
-                return StatusCode(StatusCodes.Status201Created, new AuthResponse(accessToken, refreshToken));
+                var command = new RegistrationCommand(registerDTO);
+                var result = await Mediator.Send(command);
+                return StatusCode(StatusCodes.Status201Created, result);
             }
             catch (ArgumentException ex)
             {

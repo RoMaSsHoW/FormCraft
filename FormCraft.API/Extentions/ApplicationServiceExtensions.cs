@@ -1,4 +1,5 @@
 ﻿using FluentMigrator.Runner;
+using FormCraft.Application.Commands.AuthCommands;
 using FormCraft.Application.Commands.FormWithAnswerCommands;
 using FormCraft.Application.Commands.FormWithQuestionCommands;
 using FormCraft.Application.Common.Persistance;
@@ -121,6 +122,7 @@ namespace FormCraft.API.Extentions
                     typeof(DeleteFormsCommand).Assembly,
                     typeof(DeleteAnswersFromQoestionsCommand).Assembly,
                     typeof(DeleteQuestionsOrTagsFromFormCommand).Assembly,
+                    typeof(RegistrationCommand).Assembly,
                     typeof(SetAnswerToQuestionCommand).Assembly,
                     typeof(GetAllTemplatesQuery).Assembly,
                     typeof(GetTemplateQuery).Assembly);
