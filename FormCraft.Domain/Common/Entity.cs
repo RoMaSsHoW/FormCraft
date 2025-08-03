@@ -2,6 +2,9 @@
 {
     public abstract class Entity
     {
+        private List<IDomainEvent> _domainEvents = new List<IDomainEvent>();
+        
+        public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
         public Guid Id { get; protected set; } = Guid.NewGuid();
 
         public override bool Equals(object? obj)
@@ -19,11 +22,19 @@
 
         public override int GetHashCode() => Id.GetHashCode();
 
-        public static bool operator ==(Entity? left, Entity? right)
-        {
-            return left is null ? right is null : left.Equals(right);
-        }
+        public static bool operator ==(Entity? left, Entity? right) 
+            => left is null ? right is null : left.Equals(right);
 
-        public static bool operator !=(Entity? left, Entity? right) => !(left == right);
+        public static bool operator !=(Entity? left, Entity? right) 
+            => !(left == right);
+        
+        public void ClearDomainEvents() 
+            => _domainEvents.Clear();
+
+        public void AddDomainEvent(IDomainEvent domainEvent)
+        {
+            _domainEvents ??= [];
+            _domainEvents.Add(domainEvent);
+        }
     }
 }
