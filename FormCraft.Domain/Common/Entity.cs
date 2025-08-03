@@ -2,7 +2,7 @@
 {
     public abstract class Entity
     {
-        private List<IDomainEvent> _domainEvents = new List<IDomainEvent>();
+        private List<IDomainEvent> _domainEvents = new ();
         
         public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
         public Guid Id { get; protected set; } = Guid.NewGuid();
