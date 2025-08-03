@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using System.Data;
 using System.Text;
+using MassTransit;
 
 namespace FormCraft.API.Extentions
 {
@@ -113,5 +114,27 @@ namespace FormCraft.API.Extentions
                     typeof(GetTemplateQuery).Assembly);
             });
         }
+
+        private static void ConfigureRabbitMq(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddMassTransit(x =>
+            {
+                // Register consumers
+                x.AddConsumers(typeof(Program).Assembly); // Or specify a particular assembly
+
+                // Configure RabbitMQ
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host("localhost", "/", h =>
+                    {
+                        h.Username("guest");
+                        h.Password("guest");
+                    });
+
+                    cfg.ConfigureEndpoints(context); // Automatically configure endpoints for consumers
+                });
+            });
+        }
     }
 }
+
