@@ -1,10 +1,7 @@
 ﻿using FluentMigrator.Runner;
-using FormCraft.Application.Commands.AuthCommands;
-using FormCraft.Application.Commands.FormWithAnswerCommands;
 using FormCraft.Application.Commands.FormWithQuestionCommands;
 using FormCraft.Application.Common.Persistance;
 using FormCraft.Application.Models.DTO;
-using FormCraft.Application.Queries.FormWithQuestionQueries;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using FormCraft.Infrastructure.Persistance;
@@ -117,15 +114,7 @@ namespace FormCraft.API.Extentions
             services.AddMediatR(mc =>
             {
                 mc.RegisterServicesFromAssemblies(
-                    typeof(CreateNewFormWithQuestionCommand).Assembly,
-                    typeof(EditFormWithQuestionCommand).Assembly,
-                    typeof(DeleteFormsCommand).Assembly,
-                    typeof(DeleteAnswersFromQoestionsCommand).Assembly,
-                    typeof(DeleteQuestionsOrTagsFromFormCommand).Assembly,
-                    typeof(RegistrationCommand).Assembly,
-                    typeof(SetAnswerToQuestionCommand).Assembly,
-                    typeof(GetAllTemplatesQuery).Assembly,
-                    typeof(GetTemplateQuery).Assembly);
+                    typeof(CreateNewFormWithQuestionCommand).Assembly);
             });
         }
     }
