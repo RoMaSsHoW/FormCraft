@@ -8,7 +8,7 @@ volumes:
 services:
   formcraft.api:
     image: ${DOCKER_REGISTRY-}formcraftapi
-    container_name: api_container
+    container_name: form_craft_api
     build:
       context: .
       dockerfile: FormCraft.API/Dockerfile
@@ -25,7 +25,7 @@ services:
 
   postgres_db:
     image: postgres:latest
-    container_name: db_container
+    container_name: form_craft_db
     restart: unless-stopped
     environment:
       POSTGRES_DB: FormCraft
@@ -40,7 +40,7 @@ services:
 
   nginx:
     image: nginx:latest
-    container_name: nginx
+    container_name: form_craft_nginx
     restart: unless-stopped
     ports:
       - "80:80"
@@ -53,3 +53,17 @@ services:
       - app_network
     depends_on:
       - formcraft.api
+
+  broker:
+    image: bitnami/rabbitmq:latest
+    container_name: form_craft_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_MANAGEMENT_ALLOW_WEB_ACCESS=true
+      - RABBITMQ_USERNAME=user
+      - RABBITMQ_PASSWORD=w6quaebXPwEMkHAO
+      - RABBITMQ_VHOST=/
+    networks:
+      - app_network
