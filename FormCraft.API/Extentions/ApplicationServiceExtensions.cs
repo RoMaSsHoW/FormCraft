@@ -1,6 +1,7 @@
 ﻿using FluentMigrator.Runner;
 using FormCraft.Application.Commands.FormWithQuestionCommands;
 using FormCraft.Application.Common.Persistance;
+using FormCraft.Application.Events;
 using FormCraft.Application.Models.DTO;
 using FormCraft.Domain.Aggregates.FormAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
@@ -131,12 +132,12 @@ namespace FormCraft.API.Extentions
             services.AddMassTransit(x =>
             {
                 // Register consumers
-                x.AddConsumers(typeof(Program).Assembly); // Or specify a particular assembly
+                x.AddConsumers(typeof(CreateFormEventHandler).Assembly);
 
                 // Configure RabbitMQ
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    var uri = new Uri($"rabbitmq://{rabbitSettings.Host}:{rabbitSettings.Port}/{rabbitSettings.VirtualHost}");
+                    var uri = new Uri($"rabbitmq://{rabbitSettings.Host}:{rabbitSettings.Port}{rabbitSettings.VirtualHost}");
 
                     cfg.Host(uri, h =>
                     {
@@ -144,7 +145,7 @@ namespace FormCraft.API.Extentions
                         h.Password(rabbitSettings.Password);
                     });
 
-                    cfg.ConfigureEndpoints(context); // Automatically configure endpoints for consumers
+                    cfg.ConfigureEndpoints(context);
                 });
             });
         }
