@@ -3,6 +3,7 @@ using FormCraft.Domain.Aggregates.FormAggregate.ValueObjects;
 using FormCraft.Domain.Aggregates.UserAggregate.Interfaces;
 using FormCraft.Domain.Aggregates.UserAggregate.ValueObjects;
 using FormCraft.Domain.Common;
+using FormCraft.Domain.Events;
 using System.ComponentModel.DataAnnotations;
 
 namespace FormCraft.Domain.Aggregates.FormAggregate
@@ -49,6 +50,8 @@ namespace FormCraft.Domain.Aggregates.FormAggregate
             if (tags.Any())
                 foreach (var tag in tags)
                     AddTag(tag);
+
+            AddDomainEvent(new CreateForm(Id));
         }
 
         public Guid AuthorId { get; private set; }
