@@ -8,6 +8,7 @@ using FormCraft.Infrastructure.Persistance;
 using FormCraft.Infrastructure.Persistance.Migrations;
 using FormCraft.Infrastructure.Persistance.Repositories;
 using FormCraft.Infrastructure.Persistance.Services;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -32,6 +33,8 @@ namespace FormCraft.API.Extentions
             ConfigureSettigsForDapper(services, configuration);
 
             ConfigureDbContext(services, configuration);
+
+            ConfigureRabbitMq(services, configuration);
 
             ConfigureMediatR(services);
 
@@ -115,6 +118,34 @@ namespace FormCraft.API.Extentions
             {
                 mc.RegisterServicesFromAssemblies(
                     typeof(CreateNewFormWithQuestionCommand).Assembly);
+            });
+        }
+
+        private static void ConfigureRabbitMq(IServiceCollection services, IConfiguration configuration)
+        {
+            var rabbitSettings = configuration.GetSection(nameof(RabbitMqSettings)).Get<RabbitMqSettings>();
+
+            if (rabbitSettings is null || string.IsNullOrEmpty(rabbitSettings.Host))
+                throw new InvalidOperationException("RabbitMQ settings are not configured properly.");
+
+            services.AddMassTransit(x =>
+            {
+                // Register consumers
+                x.AddConsumers(typeof(Program).Assembly); // Or specify a particular assembly
+
+                // Configure RabbitMQ
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    var uri = new Uri($"rabbitmq://{rabbitSettings.Host}:{rabbitSettings.Port}/{rabbitSettings.VirtualHost}");
+
+                    cfg.Host(uri, h =>
+                    {
+                        h.Username(rabbitSettings.Username);
+                        h.Password(rabbitSettings.Password);
+                    });
+
+                    cfg.ConfigureEndpoints(context); // Automatically configure endpoints for consumers
+                });
             });
         }
     }

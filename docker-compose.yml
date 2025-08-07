@@ -17,6 +17,11 @@ services:
       - JWTSettings__Issuer=${JWTSettings__Issuer}
       - JWTSettings__Audience=${JWTSettings__Audience}
       - JWTSettings__ExpireTime=${JWTSettings__ExpireTime}
+      - RabbitMqSettings__Host=${RabbitMqSettings__Host}
+      - RabbitMqSettings__Port=${RabbitMqSettings__Port}
+      - RabbitMqSettings__Username=${RabbitMqSettings__Username}
+      - RabbitMqSettings__Password=${RabbitMqSettings__Password}
+      - RabbitMqSettings__VirtualHost=${RabbitMqSettings__VirtualHost}
       - ConnectionStrings__PostgresqlDbConnection=${ConnectionStrings__PostgresqlDbConnection}
     networks:
         - app_network
@@ -62,7 +67,7 @@ services:
       - "15672:15672"
     environment:
       - RABBITMQ_MANAGEMENT_ALLOW_WEB_ACCESS=true
-      - RABBITMQ_USERNAME=user
+      - RABBITMQ_USERNAME=admin
       - RABBITMQ_PASSWORD=w6quaebXPwEMkHAO
       - RABBITMQ_VHOST=/
     networks:
