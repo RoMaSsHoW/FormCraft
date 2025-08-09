@@ -35,13 +35,13 @@ namespace FormCraft.Infrastructure.Persistance.Repositories
             return user;
         }
 
-        public User FindById(Guid userId)
+        public async Task<User> FindById(Guid userId)
         {
             if (userId == Guid.Empty)
                 throw new ArgumentException($"User Id cannot be null", nameof(userId));
 
-            var user = _dbContext.Users
-                .FirstOrDefault(u => u.Id == userId);
+            var user = await _dbContext.Users
+                .FirstOrDefaultAsync(u => u.Id == userId);
 
             return user;
         }

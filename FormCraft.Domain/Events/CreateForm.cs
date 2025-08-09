@@ -4,6 +4,8 @@ namespace FormCraft.Domain.Events
 {
     public class CreateForm : DomainEventBase
     {
+        public CreateForm() { }
+
         public CreateForm(Guid formId)
         {
             if (formId == Guid.Empty)
@@ -12,6 +14,6 @@ namespace FormCraft.Domain.Events
             FormId = formId;
         }
 
-        public Guid FormId { get; private set; }
+        public Guid FormId { get; init; }
     }
 }

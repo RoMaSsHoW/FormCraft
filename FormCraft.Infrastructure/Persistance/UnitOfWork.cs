@@ -30,7 +30,7 @@ namespace FormCraft.Infrastructure.Persistance
                 entry.Entity.ClearDomainEvents();
 
             foreach (var domainEvent in domainEvents)
-                await _publishEndpoint.Publish(domainEvent, cancellationToken);
+                await _publishEndpoint.Publish(domainEvent.GetType(), domainEvent, cancellationToken);
 
             return result > 0;
         }
