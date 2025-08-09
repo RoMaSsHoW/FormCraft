@@ -47,6 +47,7 @@ namespace FormCraft.API.Extentions
         private static void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<ITokenService, TokenService>();
+            services.AddSingleton<ITokenChecker, TokenChecker>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();

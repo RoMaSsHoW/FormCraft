@@ -67,25 +67,19 @@ namespace FormCraft.API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult> Login([FromForm] LoginRequest loginDTO)
         {
-            var user = await _userRepository.FindByEmailAsync(loginDTO.Email);
-            if (user == null) return Unauthorized();
-
-            var refreshToken = string.IsNullOrEmpty(user.RefreshToken) || IsRefreshTokenExpired(user)
-                ? _tokenService.GenerateRefreshToken()
-                : user.RefreshToken;
-
-            if (user.RefreshToken != refreshToken)
+            try
             {
-                user.ChangeRefreshToken(refreshToken);
-                await _unitOfWork.CommitAsync();
+                var command = new LoginCommand(loginDTO);
+                var result = await Mediator.Send(command);
+                return StatusCode(StatusCodes.Status202Accepted, result);
             }
-
-            if (user.Verify(loginDTO.Password))
+            catch (Exception ex)
             {
-                var accessToken = _tokenService.GenerateAccessToken(user);
-                return Ok(new AuthResponse(accessToken, refreshToken));
+                return StatusCode(StatusCodes.Status400BadRequest, new
+                {
+                    ExceptionText = ex.Message
+                });
             }
-            return Unauthorized("Wrong password");
         }
 
         [HttpPost("refreshAccessToken")]
